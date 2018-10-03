@@ -1021,16 +1021,17 @@ int main(int argc, char *argv[])
 	char connect_name[100] = "";
 
 	std::cout<<"Address to connect to [empty = host a game]: ";
-	if(g_settings.get("address") != "" && is_yes(g_settings.get("host_game")) == false)
-	{
-		std::cout<<g_settings.get("address")<<std::endl;
-		snprintf(connect_name, 100, "%s", g_settings.get("address").c_str());
+	if(is_yes(g_settings.get("host_game")) == false) {
+		if(g_settings.get("address") != "" )
+		{
+			std::cout<<g_settings.get("address")<<std::endl;
+			snprintf(connect_name, 100, "%s", g_settings.get("address").c_str());
+		}
+		else
+		{
+			std::cin.getline(connect_name, 100);
+		}
 	}
-	else
-	{
-		std::cin.getline(connect_name, 100);
-	}
-	
 	if(connect_name[0] == 0){
 		snprintf(connect_name, 100, "127.0.0.1");
 		hosting = true;
