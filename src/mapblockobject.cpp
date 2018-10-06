@@ -123,9 +123,6 @@ void MovingObject::move(float dtime, v3f acceleration)
 		/*
 			Collision detection
 		*/
-		
-		v3s16 pos_i = floatToInt(position);
-		
 		// The loop length is limited to the object moving a distance
 		f32 d = (float)BS * 0.15;
 

@@ -62,9 +62,8 @@ public:
 	bool isValidPosition(v3s16 p)
 	{
 		v3s16 blockpos = getNodeBlockPos(p);
-		MapBlock *blockref;
 		try{
-			blockref = getBlockNoCreate(blockpos);
+			getBlockNoCreate(blockpos);
 		}
 		catch(InvalidPositionException &e)
 		{
@@ -276,9 +275,8 @@ public:
 	bool isValidPosition(v3s16 p)
 	{
 		v3s16 blockpos = getNodeBlockPos(p);
-		MapBlock *blockref;
 		try{
-			blockref = getBlockNoCreate(blockpos);
+			getBlockNoCreate(blockpos);
 		}
 		catch(InvalidPositionException &e)
 		{

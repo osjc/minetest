@@ -159,9 +159,8 @@ public:
 		if(blockpos.X != 0 || blockpos.Z != 0)
 			return false;
 
-		MapBlock *blockref;
 		try{
-			blockref = getBlockNoCreate(blockpos.Y);
+			getBlockNoCreate(blockpos.Y);
 		}
 		catch(InvalidPositionException &e)
 		{

@@ -295,7 +295,7 @@ struct TestMapBlock
 			bool exception_thrown = false;
 			try{
 				// This should throw an exception
-				MapNode n = b.getNodeParent(v3s16(0,0,-1));
+				b.getNodeParent(v3s16(0,0,-1));
 			}
 			catch(InvalidPositionException &e)
 			{
@@ -830,9 +830,6 @@ struct TestConnection
 			SharedBuffer<u8> data1 = SharedBufferFromString("hello1");
 			SharedBuffer<u8> data2 = SharedBufferFromString("Hello2");
 
-			Address client_address =
-					server.GetPeer(peer_id_client)->address;
-			
 			dstream<<"*** Sending packets in wrong order (2,1,2)"
 					<<std::endl;
 			

@@ -186,7 +186,6 @@ Doing now:
 #define FIELD_OF_VIEW_TEST 0
 
 #ifdef UNITTEST_DISABLE
-	#warning "Disabling unit tests"
 	// Disable unit tests
 	#define ENABLE_TESTS 0
 #else
@@ -1396,6 +1395,7 @@ int main(int argc, char *argv[])
 	struct TextDest
 	{
 		virtual void sendText(std::string text) = 0;
+		virtual ~TextDest() {}
 	};
 	
 	struct TextDestSign : public TextDest

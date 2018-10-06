@@ -299,7 +299,7 @@ public:
 		}
 	}
 
-	~FixedHeightmap()
+	virtual ~FixedHeightmap()
 	{
 		if(m_data)
 			delete[] m_data;
@@ -528,7 +528,7 @@ public:
 		assert(m_base_generator != NULL);
 	}
 
-	~UnlimitedHeightmap()
+	virtual ~UnlimitedHeightmap()
 	{
 		core::map<v2s16, FixedHeightmap*>::Iterator i;
 		i = m_heightmaps.getIterator();
@@ -572,4 +572,3 @@ public:
 };
 
 #endif
-

@@ -288,7 +288,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	Player *player = server->m_env.getPlayer(peer_id);
 
 	v3f playerpos = player->getPosition();
-	v3f playerspeed = player->getSpeed();
 
 	v3s16 center_nodepos = floatToInt(playerpos);
 
@@ -626,7 +625,6 @@ void RemoteClient::SendObjectData(
 	Player *player = server->m_env.getPlayer(peer_id);
 
 	v3f playerpos = player->getPosition();
-	v3f playerspeed = player->getSpeed();
 
 	v3s16 center_nodepos = floatToInt(playerpos);
 	v3s16 center = getNodeBlockPos(center_nodepos);

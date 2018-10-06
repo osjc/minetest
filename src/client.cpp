@@ -492,14 +492,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		return;
 	}
 
-	con::Peer *peer;
-	{
-		JMutexAutoLock lock(m_con_mutex);
-		// All data is coming from the server
-		// PeerNotFoundException is handled by caller.
-		peer = m_con.GetPeer(PEER_ID_SERVER);
-	}
-
 	u8 ser_version = m_server_ser_ver;
 
 	//dstream<<"Client received command="<<(int)command<<std::endl;
@@ -984,13 +976,6 @@ bool Client::AsyncProcessPacket(LazyMeshUpdater &mesh_updater)
 	try //for catching con::PeerNotFoundException
 	{
 
-	con::Peer *peer;
-	{
-		JMutexAutoLock lock(m_con_mutex);
-		// All data is coming from the server
-		peer = m_con.GetPeer(PEER_ID_SERVER);
-	}
-	
 	u8 ser_version = m_server_ser_ver;
 
 	IncomingPacket packet = getPacket();

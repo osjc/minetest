@@ -430,12 +430,6 @@ void Map::unspreadLight(core::map<v3s16, u8> & from_nodes,
 		if(block->isDummy())
 			continue;
 
-		// Calculate relative position in block
-		v3s16 relpos = pos - blockpos_last * MAP_BLOCKSIZE;
-
-		// Get node straight from the block
-		MapNode n = block->getNode(relpos);
-		
 		u8 oldlight = j.getNode()->getValue();
 		
 		// Loop through 6 neighbors
@@ -1121,7 +1115,6 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	// Get the brightest neighbour node and propagate light from it
 	v3s16 n2p = getBrightestNeighbour(p);
 	try{
-		MapNode n2 = getNode(n2p);
 		lightNeighbors(n2p, modified_blocks);
 	}
 	catch(InvalidPositionException &e)

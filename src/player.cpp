@@ -62,8 +62,6 @@ void Player::move(f32 dtime, Map &map)
 		Collision detection
 	*/
 
-	v3s16 pos_i = floatToInt(position);
-	
 	// The frame length is limited to the player going 0.1*BS per call
 	f32 d = (float)BS * 0.15;
 

@@ -1,40 +1,81 @@
-# Makefile for Irrlicht Examples
-# It's usually sufficient to change just the target name and source file list
-# and be sure that CXX is set to a valid compiler
-TARGET = minerworld
-SOURCE_FILES = voxel.cpp mapblockobject.cpp inventory.cpp debug.cpp serialization.cpp light.cpp filesys.cpp connection.cpp environment.cpp client.cpp server.cpp socket.cpp mapblock.cpp mapsector.cpp heightmap.cpp map.cpp player.cpp utility.cpp main.cpp test.cpp
-SOURCES = $(addprefix src/, $(SOURCE_FILES))
-OBJECTS = $(SOURCES:.cpp=.o)
-FASTTARGET = minerworld-fast
+# Makefile for FastMiner
+
+#############################################################################
+# USER CONFIGURABLE STUFF
+#############################################################################
 
 IRRLICHTPATH = ../irrlicht/irrlicht-1.7.1
 JTHREADPATH = ../jthread/jthread-1.2.1
 
-CPPFLAGS = -I$(IRRLICHTPATH)/include -I/usr/X11R6/include -I$(JTHREADPATH)/src
+CPPFLAGS = -I$(IRRLICHTPATH)/include -I/usr/X11R6/include \
+           -I$(JTHREADPATH)/src
 
-#CXXFLAGS = -O2 -ffast-math -Wall -fomit-frame-pointer -pipe
-CXXFLAGS = -O2 -ffast-math -Wall -g -pipe
-#CXXFLAGS = -O1 -ffast-math -Wall -g
-#CXXFLAGS = -Wall -g -O0
+COMMON_FLAGS = -Wall -Werror -pipe
 
-#CXXFLAGS = -O3 -ffast-math -Wall
-#CXXFLAGS = -O3 -ffast-math -Wall -g
-#CXXFLAGS = -O2 -ffast-math -Wall -g
+NORMAL_OPTIMIZATIONS = -O0 -g
 
-FASTCXXFLAGS = -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops -mtune=i686
-#FASTCXXFLAGS = -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops -mtune=i686 -fwhole-program
+FAST_OPTIMIZATIONS = -O3 -ffast-math -fomit-frame-pointer \
+                     -funroll-loops -mtune=i686 -DUNITTEST_DISABLE
 
-#Default target
+#############################################################################
+# SOURCE, LIBRARY AND OUTPUT DESCRIPTION
+#############################################################################
 
-all: test
+TARGET = minerworld
+
+FASTTARGET = minerworld-fast
+
+SOURCE_FILES = \
+	voxel.cpp \
+	mapblockobject.cpp \
+	inventory.cpp \
+	debug.cpp \
+	serialization.cpp \
+	light.cpp \
+	filesys.cpp \
+	connection.cpp \
+	environment.cpp \
+	client.cpp \
+	server.cpp \
+	socket.cpp \
+	mapblock.cpp \
+	mapsector.cpp \
+	heightmap.cpp \
+	map.cpp \
+	player.cpp \
+	utility.cpp \
+	main.cpp \
+	test.cpp
 
 ifeq ($(HOSTTYPE), x86_64)
 LIBSELECT=64
 endif
 
+LIBDIRS = \
+	-L/usr/X11R6/lib$(LIBSELECT) \
+	-L$(IRRLICHTPATH)/lib/Linux \
+	-L$(JTHREADPATH)/src/.libs
+
+LIBRARIES = \
+	-lIrrlicht \
+	-ljthread \
+	-lGL \
+	-lXxf86vm \
+	-lX11 \
+	-lXext
+
+#############################################################################
+# THE BUILD SYSTEM ITSELF
+#############################################################################
+
+#Default target
+
+all: test
+
 # Target specific settings
 
-test fasttest: LDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -L$(IRRLICHTPATH)/lib/Linux -L$(JTHREADPATH)/src/.libs -lIrrlicht -lGL -lXxf86vm -lXext -lX11 -ljthread
+test: OPTIMIZATIONS = $(NORMAL_OPTIMIZATIONS)
+fasttest: OPTIMIZATIONS = $(FAST_OPTIMIZATIONS)
 
 # Name of the binary
 
@@ -43,22 +84,29 @@ FASTDESTPATH = bin/$(FASTTARGET)$(SUF)
 
 # Build commands
 
+SOURCES = $(addprefix src/, $(SOURCE_FILES))
+OBJECTS = $(SOURCES:.cpp=.o)
+
+COMPILEOPTS = $(OPTIMIZATIONS) $(COMMON_FLAGS) $(CPPFLAGS)
+
+LINKOPTS = $(OBJECTS) $(LDFLAGS) $(LIBDIRS) $(LIBRARIES)
+
 test: $(DESTPATH)
 
 fasttest: $(FASTDESTPATH)
 
-$(FASTDESTPATH): $(SOURCES)
-	$(CXX) -o $(FASTDESTPATH) $(SOURCES) $(CPPFLAGS) $(FASTCXXFLAGS) $(LDFLAGS) -DUNITTEST_DISABLE
-	@# Errno doesn't work ("error: ‘__errno_location’ was not declared in this scope")
-	@#cat $(SOURCES) | $(CXX) -o $(FASTDESTPATH) -x c++ - -Isrc/ $(CPPFLAGS) $(FASTCXXFLAGS) $(LDFLAGS) -DUNITTEST_DISABLE -DDISABLE_ERRNO
+$(FASTDESTPATH): $(OBJECTS)
+	mkdir -p bin
+	$(CXX) -o $@ $(LINKOPTS)
 
 $(DESTPATH): $(OBJECTS)
-	$(CXX) -o $@ $(OBJECTS) $(LDFLAGS)
+	mkdir -p bin
+	$(CXX) -o $@ $(LINKOPTS)
 
 .cpp.o:
-	$(CXX) -c -o $@ $< $(CPPFLAGS) $(CXXFLAGS)
+	$(CXX) -c -o $@ $< $(CXXFLAGS) $(COMPILEOPTS)
 
 clean:
 	@$(RM) $(OBJECTS) $(DESTPATH) $(FASTDESTPATH)
 
-.PHONY: all test fasttest clean
+.PHONY: all makedir test fasttest clean

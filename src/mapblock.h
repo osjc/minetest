@@ -125,7 +125,7 @@ public:
 		mesh = NULL;
 	}
 
-	~MapBlock()
+	virtual ~MapBlock()
 	{
 		{
 			JMutexAutoLock lock(mesh_mutex);
