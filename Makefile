@@ -1,11 +1,11 @@
 # Makefile for Irrlicht Examples
 # It's usually sufficient to change just the target name and source file list
 # and be sure that CXX is set to a valid compiler
-TARGET = test
+TARGET = minerworld
 SOURCE_FILES = voxel.cpp mapblockobject.cpp inventory.cpp debug.cpp serialization.cpp light.cpp filesys.cpp connection.cpp environment.cpp client.cpp server.cpp socket.cpp mapblock.cpp mapsector.cpp heightmap.cpp map.cpp player.cpp utility.cpp main.cpp test.cpp
 SOURCES = $(addprefix src/, $(SOURCE_FILES))
 OBJECTS = $(SOURCES:.cpp=.o)
-FASTTARGET = fasttest
+FASTTARGET = minerworld-fast
 
 IRRLICHTPATH = ../irrlicht/irrlicht-1.7.1
 JTHREADPATH = ../jthread/jthread-1.2.1
