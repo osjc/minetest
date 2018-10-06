@@ -876,7 +876,7 @@ private:
 	s32 m_selection;
 };
 
-int main(int argc, char *argv[])
+int RunMainCode(int argc, char *argv[])
 {
 	/*
 		Low-level initialization
@@ -2152,6 +2152,16 @@ int main(int argc, char *argv[])
 	debugstreams_deinit();
 	
 	return 0;
+}
+
+extern "C"
+int MainCPP(int argc, char *argv[])
+{
+	try {
+		return RunMainCode(argc, argv);
+	} catch(...) {
+		return -1;
+	}
 }
 
 //END

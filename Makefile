@@ -25,7 +25,10 @@ TARGET = minerworld
 
 FASTTARGET = minerworld-fast
 
-SOURCE_FILES = \
+C_SOURCE_FILES = \
+	startup.c
+
+CPP_SOURCE_FILES = \
 	voxel.cpp \
 	mapblockobject.cpp \
 	inventory.cpp \
@@ -84,8 +87,12 @@ FASTDESTPATH = bin/$(FASTTARGET)$(SUF)
 
 # Build commands
 
-SOURCES = $(addprefix src/, $(SOURCE_FILES))
-OBJECTS = $(SOURCES:.cpp=.o)
+CPP_SOURCES = $(addprefix src/, $(CPP_SOURCE_FILES))
+CPP_OBJECTS = $(CPP_SOURCES:.cpp=.o)
+C_SOURCES = $(addprefix src/, $(C_SOURCE_FILES))
+C_OBJECTS = $(C_SOURCES:.c=.o)
+SOURCES = $(C_SOURCES) $(CPP_SOURCES)
+OBJECTS = $(C_OBJECTS) $(CPP_OBJECTS)
 
 COMPILEOPTS = $(OPTIMIZATIONS) $(COMMON_FLAGS) $(CPPFLAGS)
 
@@ -102,6 +109,9 @@ $(FASTDESTPATH): $(OBJECTS)
 $(DESTPATH): $(OBJECTS)
 	mkdir -p bin
 	$(CXX) -o $@ $(LINKOPTS)
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(COMPILEOPTS)
 
 .cpp.o:
 	$(CXX) -c -o $@ $< $(CXXFLAGS) $(COMPILEOPTS)
