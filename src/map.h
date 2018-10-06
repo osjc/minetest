@@ -25,13 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <malloc.h>
 
-#ifdef _WIN32
-	#include <windows.h>
-	#define sleep_s(x) Sleep((x*1000))
-#else
-	#include <unistd.h>
-	#define sleep_s(x) sleep(x)
-#endif
+#include <unistd.h>
+#define sleep_s(x) sleep(x)
 
 #include "common_irrlicht.h"
 #include "heightmap.h"

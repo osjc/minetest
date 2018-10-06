@@ -28,26 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define DP 0
 #define DPS ""
 
-bool g_sockets_initialized = false;
-
-void sockets_init()
-{
-#ifdef _WIN32
-	WSADATA WsaData;
-	if(WSAStartup( MAKEWORD(2,2), &WsaData ) != NO_ERROR)
-		throw SocketException("WSAStartup failed");
-#else
-#endif
-	g_sockets_initialized = true;
-}
-
-void sockets_cleanup()
-{
-#ifdef _WIN32
-	WSACleanup();
-#endif
-}
-
 Address::Address()
 {
 }
@@ -128,9 +108,6 @@ void Address::print() const
 
 UDPSocket::UDPSocket()
 {
-	if(g_sockets_initialized == false)
-		throw SocketException("Sockets not initialized");
-	
     m_handle = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	
 	if(DP)
@@ -141,19 +118,11 @@ UDPSocket::UDPSocket()
 		throw SocketException("Failed to create socket");
     }
 
-/*#ifdef _WIN32
-	DWORD nonblocking = 0;
-	if(ioctlsocket(m_handle, FIONBIO, &nonblocking) != 0)
-	{
-		throw SocketException("Failed set non-blocking mode");
-	}
-#else
-	int nonblocking = 0;
+/*	int nonblocking = 0;
 	if(fcntl(m_handle, F_SETFL, O_NONBLOCK, nonblocking) == -1)
 	{
 		throw SocketException("Failed set non-blocking mode");
-	}
-#endif*/
+	}*/
 
 	setTimeoutMs(0);
 }
@@ -163,11 +132,7 @@ UDPSocket::~UDPSocket()
 	if(DP)
 	dstream<<DPS<<"UDPSocket("<<(int)m_handle<<")::~UDPSocket()"<<std::endl;
 
-#ifdef _WIN32
-	closesocket(m_handle);
-#else
 	close(m_handle);
-#endif
 }
 
 void UDPSocket::Bind(unsigned short port)
@@ -183,9 +148,7 @@ void UDPSocket::Bind(unsigned short port)
 
     if(bind(m_handle, (const sockaddr*)&address, sizeof(sockaddr_in)) < 0)
     {
-#ifndef DISABLE_ERRNO
 		dstream<<(int)m_handle<<": Bind failed: "<<strerror(errno)<<std::endl;
-#endif
 		throw SocketException("Failed to bind socket");
     }
 }
@@ -312,18 +275,7 @@ bool UDPSocket::WaitData(int timeout_ms)
 	}
 	else if(result < 0){
 		// Error
-#ifndef DISABLE_ERRNO
 		dstream<<(int)m_handle<<": Select failed: "<<strerror(errno)<<std::endl;
-#endif
-#ifdef _WIN32
-		int e = WSAGetLastError();
-		dstream<<(int)m_handle<<": WSAGetLastError()="<<e<<std::endl;
-		if(e == 10004 /*=WSAEINTR*/)
-		{
-			dstream<<"WARNING: Ignoring WSAEINTR."<<std::endl;
-			return false;
-		}
-#endif
 		throw SocketException("Select failed");
 	}
 	else if(FD_ISSET(m_handle, &readset) == false){

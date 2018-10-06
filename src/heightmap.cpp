@@ -417,7 +417,6 @@ void FixedHeightmap::deSerialize(u8 *source, u8 version)
 
 void setcolor(f32 h, f32 rangemin, f32 rangemax)
 {
-#ifndef _WIN32
 	const char *colors[] =
 	{
 		"\x1b[40m",
@@ -440,13 +439,10 @@ void setcolor(f32 h, f32 rangemin, f32 rangemax)
 	printf("%s", colors[color]);
 	//printf("\x1b[31;40m");
 	//printf("\x1b[44;1m");
-#endif
 }
 void resetcolor()
 {
-#ifndef _WIN32
 	printf("\x1b[0m");
-#endif
 }
 
 /*

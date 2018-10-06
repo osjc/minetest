@@ -186,11 +186,7 @@ Doing now:
 #define FIELD_OF_VIEW_TEST 0
 
 #ifdef UNITTEST_DISABLE
-	#ifdef _WIN32
-		#pragma message ("Disabling unit tests")
-	#else
-		#warning "Disabling unit tests"
-	#endif
+	#warning "Disabling unit tests"
 	// Disable unit tests
 	#define ENABLE_TESTS 0
 #else
@@ -198,21 +194,8 @@ Doing now:
 	#define ENABLE_TESTS 1
 #endif
 
-#ifdef _MSC_VER
-#pragma comment(lib, "Irrlicht.lib")
-#pragma comment(lib, "jthread.lib")
-// This would get rid of the console window
-//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
-#endif
-
-#ifdef _WIN32
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-	#define sleep_ms(x) Sleep(x)
-#else
-	#include <unistd.h>
-	#define sleep_ms(x) usleep(x*1000)
-#endif
+#include <unistd.h>
+#define sleep_ms(x) usleep(x*1000)
 
 #include <iostream>
 #include <fstream>
@@ -332,9 +315,9 @@ bool g_game_focused = true;
 
 // Connection
 std::ostream *dout_con_ptr = &dummyout;
-std::ostream *derr_con_ptr = &dstream_no_stderr;
-//std::ostream *dout_con_ptr = &dstream_no_stderr;
-//std::ostream *derr_con_ptr = &dstream_no_stderr;
+std::ostream *derr_con_ptr = &dstream;
+//std::ostream *dout_con_ptr = &dstream;
+//std::ostream *derr_con_ptr = &dstream;
 //std::ostream *dout_con_ptr = &dstream;
 //std::ostream *derr_con_ptr = &dstream;
 
@@ -916,13 +899,8 @@ int main(int argc, char *argv[])
 		Low-level initialization
 	*/
 
-	bool disable_stderr = false;
-#ifdef _WIN32
-	disable_stderr = true;
-#endif
-
 	// Initialize debug streams
-	debugstreams_init(disable_stderr, DEBUGFILE);
+	debugstreams_init(DEBUGFILE);
 	// Initialize debug stacks
 	debug_stacks_init();
 
@@ -949,10 +927,6 @@ int main(int argc, char *argv[])
 	// This enables printing all characters in bitmap font
 	setlocale(LC_CTYPE, "en_US");
 
-	// Initialize sockets
-	sockets_init();
-	atexit(sockets_cleanup);
-	
 	// Initialize timestamp mutex
 	g_timestamp_mutex.Init();
 
@@ -1177,12 +1151,7 @@ int main(int argc, char *argv[])
 
 	video::E_DRIVER_TYPE driverType;
 
-#ifdef _WIN32
-	//driverType = video::EDT_DIRECT3D9; // Doesn't seem to work
 	driverType = video::EDT_OPENGL;
-#else
-	driverType = video::EDT_OPENGL;
-#endif
 
 	// create device and exit if creation failed
 

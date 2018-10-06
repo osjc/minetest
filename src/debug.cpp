@@ -22,14 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef _WIN32
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-	#define sleep_ms(x) Sleep(x)
-#else
-	#include <unistd.h>
-	#define sleep_ms(x) usleep(x*1000)
-#endif
+#include <unistd.h>
+#define sleep_ms(x) usleep(x*1000)
 
 /*
 	Debug output
@@ -37,11 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 FILE *g_debugstreams[DEBUGSTREAM_COUNT] = {stderr, NULL};
 
-void debugstreams_init(bool disable_stderr, const char *filename)
+void debugstreams_init(const char *filename)
 {
-	if(disable_stderr)
-		g_debugstreams[0] = NULL;
-
 	if(filename)
 		g_debugstreams[1] = fopen(filename, "a");
 		
@@ -59,10 +50,8 @@ void debugstreams_deinit()
 		fclose(g_debugstreams[1]);
 }
 
-Debugbuf debugbuf(false);
+Debugbuf debugbuf;
 std::ostream dstream(&debugbuf);
-Debugbuf debugbuf_no_stderr(true);
-std::ostream dstream_no_stderr(&debugbuf_no_stderr);
 Nullstream dummyout;
 
 /*

@@ -24,11 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef PORTING_HEADER
 #define PORTING_HEADER
 
-#ifdef _WIN32
-	#define SWPRINTF_CHARSTRING L"%S"
-#else
-	#define SWPRINTF_CHARSTRING L"%s"
-#endif
+#define SWPRINTF_CHARSTRING L"%s"
 
 #endif
 

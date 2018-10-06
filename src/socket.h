@@ -20,22 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SOCKET_HEADER
 #define SOCKET_HEADER
 
-#ifdef _WIN32
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-	#include <winsock2.h>
-	#include <ws2tcpip.h>
-	#pragma comment(lib, "wsock32.lib")
-typedef SOCKET socket_t;
-typedef int socklen_t;
-#else
-	#include <sys/socket.h>
-	#include <netinet/in.h>
-	#include <fcntl.h>
-	#include <netdb.h>
-	#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <fcntl.h>
+#include <netdb.h>
+#include <unistd.h>
+
 typedef int socket_t;
-#endif
 
 #include <ostream>
 #include "exceptions.h"
@@ -67,9 +58,6 @@ public:
 	{
 	}
 };
-
-void sockets_init();
-void sockets_cleanup();
 
 class Address
 {

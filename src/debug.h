@@ -35,23 +35,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Compatibility stuff
 */
 
-#if (defined(WIN32) || defined(_WIN32_WCE))
-typedef DWORD threadid_t;
-#define __NORETURN __declspec(noreturn)
-#define __FUNCTION_NAME __FUNCTION__
-#else
 typedef pthread_t threadid_t;
 #define __NORETURN __attribute__ ((__noreturn__))
 #define __FUNCTION_NAME __PRETTY_FUNCTION__
-#endif
 
 inline threadid_t get_current_thread_id()
 {
-#if (defined(WIN32) || defined(_WIN32_WCE))
-	return GetCurrentThreadId();
-#else
 	return pthread_self();
-#endif
 }
 
 /*
@@ -62,7 +52,7 @@ inline threadid_t get_current_thread_id()
 
 extern FILE *g_debugstreams[DEBUGSTREAM_COUNT];
 
-extern void debugstreams_init(bool disable_stderr, const char *filename);
+extern void debugstreams_init(const char *filename);
 extern void debugstreams_deinit();
 
 #define DEBUGPRINT(...)\
@@ -79,17 +69,10 @@ extern void debugstreams_deinit();
 class Debugbuf : public std::streambuf
 {
 public:
-	Debugbuf(bool disable_stderr)
-	{
-		m_disable_stderr = disable_stderr;
-	}
-
 	int overflow(int c)
 	{
 		for(int i=0; i<DEBUGSTREAM_COUNT; i++)
 		{
-			if(g_debugstreams[i] == stderr && m_disable_stderr)
-				continue;
 			if(g_debugstreams[i] != NULL)
 				fwrite(&c, 1, 1, g_debugstreams[i]);
 			//TODO: Is this slow?
@@ -102,8 +85,6 @@ public:
 	{
 		for(int i=0; i<DEBUGSTREAM_COUNT; i++)
 		{
-			if(g_debugstreams[i] == stderr && m_disable_stderr)
-				continue;
 			if(g_debugstreams[i] != NULL)
 				fwrite(s, 1, n, g_debugstreams[i]);
 			//TODO: Is this slow?
@@ -112,9 +93,6 @@ public:
 
 		return n;
 	}
-	
-private:
-	bool m_disable_stderr;
 };
 
 // This is used to redirect output to /dev/null
@@ -129,7 +107,6 @@ private:
 
 extern Debugbuf debugbuf;
 extern std::ostream dstream;
-extern std::ostream dstream_no_stderr;
 extern Nullstream dummyout;
 
 /*

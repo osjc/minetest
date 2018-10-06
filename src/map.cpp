@@ -26,13 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include "voxel.h"
 
-#ifdef _WIN32
-	#include <windows.h>
-	#define sleep_ms(x) Sleep(x)
-#else
-	#include <unistd.h>
-	#define sleep_ms(x) usleep(x*1000)
-#endif
+#include <unistd.h>
+#define sleep_ms(x) usleep(x*1000)
 
 MapBlockPointerCache::MapBlockPointerCache(Map *map)
 {
