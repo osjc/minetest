@@ -125,47 +125,6 @@ __NORETURN extern void assert_fail(
 #define assert(expr) ASSERT(expr)
 
 /*
-	DebugStack
-*/
-
-#define DEBUG_STACK_SIZE 50
-#define DEBUG_STACK_TEXT_SIZE 300
-
-struct DebugStack
-{
-	DebugStack(threadid_t id);
-	void print(FILE *file, bool everything);
-	
-	threadid_t threadid;
-	char stack[DEBUG_STACK_SIZE][DEBUG_STACK_TEXT_SIZE];
-	int stack_i; // Points to the lowest empty position
-	int stack_max_i; // Highest i that was seen
-};
-
-extern core::map<threadid_t, DebugStack*> g_debug_stacks;
-extern JMutex g_debug_stacks_mutex;
-
-extern void debug_stacks_init();
-extern void debug_stacks_print();
-
-class DebugStacker
-{
-public:
-	DebugStacker(const char *text);
-	~DebugStacker();
-
-private:
-	DebugStack *m_stack;
-	bool m_overflowed;
-};
-
-#define DSTACK(...)\
-	char __buf[DEBUG_STACK_TEXT_SIZE];\
-	snprintf(__buf,\
-			DEBUG_STACK_TEXT_SIZE, __VA_ARGS__);\
-	DebugStacker __debug_stacker(__buf);
-
-/*
 	Packet counter
 */
 

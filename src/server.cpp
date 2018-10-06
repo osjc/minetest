@@ -34,8 +34,6 @@ void * ServerThread::Thread()
 {
 	ThreadStarted();
 
-	DSTACK(__FUNCTION_NAME);
-
 	while(getRun())
 	{
 		try{
@@ -67,8 +65,6 @@ void * ServerThread::Thread()
 void * EmergeThread::Thread()
 {
 	ThreadStarted();
-
-	DSTACK(__FUNCTION_NAME);
 
 	bool debug=false;
 #if CATCH_UNHANDLED_EXCEPTIONS
@@ -271,8 +267,6 @@ void * EmergeThread::Thread()
 void RemoteClient::GetNextBlocks(Server *server, float dtime,
 		core::array<PrioritySortedBlockTransfer> &dest)
 {
-	DSTACK(__FUNCTION_NAME);
-	
 	// Won't send anything if already sending
 	{
 		JMutexAutoLock lock(m_blocks_sending_mutex);
@@ -534,8 +528,6 @@ void RemoteClient::SendObjectData(
 		core::map<v3s16, bool> &stepped_blocks
 	)
 {
-	DSTACK(__FUNCTION_NAME);
-
 	// Can't send anything without knowing version
 	if(serialization_version == SER_FMT_VER_INVALID)
 	{
@@ -916,7 +908,6 @@ Server::~Server()
 
 void Server::start(unsigned short port)
 {
-	DSTACK(__FUNCTION_NAME);
 	// Stop thread if already running
 	m_thread.stop();
 	
@@ -933,7 +924,6 @@ void Server::start(unsigned short port)
 
 void Server::stop()
 {
-	DSTACK(__FUNCTION_NAME);
 	// Stop threads (set run=false first so both start stopping)
 	m_thread.setRun(false);
 	m_emergethread.setRun(false);
@@ -945,7 +935,6 @@ void Server::stop()
 
 void Server::step(float dtime)
 {
-	DSTACK(__FUNCTION_NAME);
 	// Limit a bit
 	if(dtime > 2.0)
 		dtime = 2.0;
@@ -957,8 +946,6 @@ void Server::step(float dtime)
 
 void Server::AsyncRunStep()
 {
-	DSTACK(__FUNCTION_NAME);
-	
 	float dtime;
 	{
 		JMutexAutoLock lock1(m_step_dtime_mutex);
@@ -1074,7 +1061,6 @@ void Server::AsyncRunStep()
 
 void Server::Receive()
 {
-	DSTACK(__FUNCTION_NAME);
 	u32 data_maxsize = 10000;
 	Buffer<u8> data(data_maxsize);
 	u16 peer_id;
@@ -1111,7 +1097,6 @@ void Server::Receive()
 
 void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 {
-	DSTACK(__FUNCTION_NAME);
 	// Environment is locked first.
 	JMutexAutoLock envlock(m_env_mutex);
 	JMutexAutoLock conlock(m_con_mutex);
@@ -1686,7 +1671,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
 {
-	DSTACK(__FUNCTION_NAME);
 	/*
 		Create a packet with the block in the right format
 	*/
@@ -1814,7 +1798,6 @@ void Server::SendSectorMeta(u16 peer_id, core::list<v2s16> ps, u8 ver)
 
 core::list<PlayerInfo> Server::getPlayerInfo()
 {
-	DSTACK(__FUNCTION_NAME);
 	JMutexAutoLock envlock(m_env_mutex);
 	JMutexAutoLock conlock(m_con_mutex);
 	
@@ -1854,7 +1837,6 @@ core::list<PlayerInfo> Server::getPlayerInfo()
 
 void Server::peerAdded(con::Peer *peer)
 {
-	DSTACK(__FUNCTION_NAME);
 	dout_server<<"Server::peerAdded(): peer->id="
 			<<peer->id<<std::endl;
 	
@@ -1965,7 +1947,6 @@ void Server::peerAdded(con::Peer *peer)
 
 void Server::deletingPeer(con::Peer *peer, bool timeout)
 {
-	DSTACK(__FUNCTION_NAME);
 	dout_server<<"Server::deletingPeer(): peer->id="
 			<<peer->id<<", timeout="<<timeout<<std::endl;
 	
@@ -1995,8 +1976,6 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 
 void Server::SendObjectData(float dtime)
 {
-	DSTACK(__FUNCTION_NAME);
-
 	core::map<v3s16, bool> stepped_blocks;
 	
 	for(core::map<u16, RemoteClient*>::Iterator
@@ -2016,8 +1995,6 @@ void Server::SendObjectData(float dtime)
 
 void Server::SendPlayerInfos()
 {
-	DSTACK(__FUNCTION_NAME);
-
 	//JMutexAutoLock envlock(m_env_mutex);
 	
 	core::list<Player*> players = m_env.getPlayers();
@@ -2051,8 +2028,6 @@ void Server::SendPlayerInfos()
 
 void Server::SendInventory(u16 peer_id)
 {
-	DSTACK(__FUNCTION_NAME);
-	
 	//JMutexAutoLock envlock(m_env_mutex);
 	
 	Player* player = m_env.getPlayer(peer_id);
@@ -2076,8 +2051,6 @@ void Server::SendInventory(u16 peer_id)
 
 void Server::SendBlocks(float dtime)
 {
-	DSTACK(__FUNCTION_NAME);
-
 	JMutexAutoLock envlock(m_env_mutex);
 
 	core::array<PrioritySortedBlockTransfer> queue;
@@ -2138,7 +2111,6 @@ void Server::SendBlocks(float dtime)
 
 RemoteClient* Server::getClient(u16 peer_id)
 {
-	DSTACK(__FUNCTION_NAME);
 	//JMutexAutoLock lock(m_con_mutex);
 	core::map<u16, RemoteClient*>::Node *n;
 	n = m_clients.find(peer_id);

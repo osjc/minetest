@@ -703,8 +703,6 @@ struct TestConnection
 
 	void Run()
 	{
-		DSTACK("TestConnection::Run");
-
 		TestHelpers();
 
 		/*
@@ -951,7 +949,6 @@ struct TestConnection
 
 void run_tests()
 {
-	DSTACK(__FUNCTION_NAME);
 	dstream<<"run_tests() started"<<std::endl;
 	TEST(TestUtilities);
 	TEST(TestCompress);

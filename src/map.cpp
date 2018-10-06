@@ -1349,9 +1349,6 @@ ServerMap::~ServerMap()
 
 MapSector * ServerMap::emergeSector(v2s16 p2d)
 {
-	DSTACK("%s: p2d=(%d,%d)",
-			__FUNCTION_NAME,
-			p2d.X, p2d.Y);
 	// Check that it doesn't exist already
 	try{
 		return getSectorNoGenerate(p2d);
@@ -1554,10 +1551,6 @@ MapBlock * ServerMap::emergeBlock(
 		core::map<v3s16, MapBlock*> &lighting_invalidated_blocks
 )
 {
-	DSTACK("%s: p=(%d,%d,%d), only_from_disk=%d",
-			__FUNCTION_NAME,
-			p.X, p.Y, p.Z, only_from_disk);
-			
 	/*dstream<<"ServerMap::emergeBlock(): "
 			<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
 			<<", only_from_disk="<<only_from_disk<<std::endl;*/
@@ -2118,7 +2111,6 @@ v3s16 ServerMap::getBlockPos(std::string sectordir, std::string blockfile)
 
 void ServerMap::save(bool only_changed)
 {
-	DSTACK(__FUNCTION_NAME);
 	if(m_map_saving_enabled == false)
 	{
 		dstream<<DTIME<<"WARNING: Not saving map, saving disabled."<<std::endl;
@@ -2190,7 +2182,6 @@ void ServerMap::save(bool only_changed)
 
 void ServerMap::loadAll()
 {
-	DSTACK(__FUNCTION_NAME);
 	dstream<<DTIME<<"ServerMap: Loading map..."<<std::endl;
 
 	loadMasterHeightmap();
@@ -2253,7 +2244,6 @@ void ServerMap::loadAll()
 
 void ServerMap::saveMasterHeightmap()
 {
-	DSTACK(__FUNCTION_NAME);
 	createDir(m_savedir);
 	
 	std::string fullpath = m_savedir + "/master_heightmap";
@@ -2284,7 +2274,6 @@ void ServerMap::saveMasterHeightmap()
 
 void ServerMap::loadMasterHeightmap()
 {
-	DSTACK(__FUNCTION_NAME);
 	std::string fullpath = m_savedir + "/master_heightmap";
 	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
 	if(is.good() == false)
@@ -2298,7 +2287,6 @@ void ServerMap::loadMasterHeightmap()
 
 void ServerMap::saveSectorMeta(ServerMapSector *sector)
 {
-	DSTACK(__FUNCTION_NAME);
 	// Format used for writing
 	u8 version = SER_FMT_VER_HIGHEST;
 	// Get destination
@@ -2320,7 +2308,6 @@ void ServerMap::saveSectorMeta(ServerMapSector *sector)
 
 MapSector* ServerMap::loadSectorMeta(std::string dirname)
 {
-	DSTACK(__FUNCTION_NAME);
 	// Get destination
 	v2s16 p2d = getSectorPos(dirname);
 	std::string dir = m_savedir + "/sectors/" + dirname;
@@ -2340,7 +2327,6 @@ MapSector* ServerMap::loadSectorMeta(std::string dirname)
 
 bool ServerMap::loadSectorFull(v2s16 p2d)
 {
-	DSTACK(__FUNCTION_NAME);
 	std::string sectorsubdir = getSectorSubDir(p2d);
 
 	MapSector *sector = NULL;
@@ -2410,7 +2396,6 @@ bool ServerMap::deFlushSector(v2s16 p2d)
 
 void ServerMap::saveBlock(MapBlock *block)
 {
-	DSTACK(__FUNCTION_NAME);
 	/*
 		Dummy blocks are not written
 	*/
@@ -2462,8 +2447,6 @@ void ServerMap::saveBlock(MapBlock *block)
 
 void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSector *sector)
 {
-	DSTACK(__FUNCTION_NAME);
-
 	try{
 
 	// Block file is map/sectors/xxxxxxxx/xxxx
@@ -2602,7 +2585,6 @@ ClientMap::~ClientMap()
 
 MapSector * ClientMap::emergeSector(v2s16 p2d)
 {
-	DSTACK(__FUNCTION_NAME);
 	// Check that it doesn't exist already
 	try{
 		return getSectorNoGenerate(p2d);
@@ -2624,7 +2606,6 @@ MapSector * ClientMap::emergeSector(v2s16 p2d)
 
 void ClientMap::deSerializeSector(v2s16 p2d, std::istream &is)
 {
-	DSTACK(__FUNCTION_NAME);
 	ClientMapSector *sector = NULL;
 
 	JMutexAutoLock lock(m_sector_mutex);
@@ -2652,7 +2633,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver,
 	video::SMaterial *materials, s32 pass)
 {
 	//m_dout<<DTIME<<"Rendering map..."<<std::endl;
-	DSTACK(__FUNCTION_NAME);
 
 	bool is_transparent_pass = pass == scene::ESNRP_TRANSPARENT;
 #if 0

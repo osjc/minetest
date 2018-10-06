@@ -40,7 +40,6 @@ Environment::~Environment()
 
 void Environment::step(float dtime)
 {
-	DSTACK(__FUNCTION_NAME);
 	/*
 		Run Map's timers
 	*/
@@ -157,7 +156,6 @@ Map & Environment::getMap()
 
 void Environment::addPlayer(Player *player)
 {
-	DSTACK(__FUNCTION_NAME);
 	//Check that only one local player exists and peer_ids are unique
 	assert(player->isLocal() == false || getLocalPlayer() == NULL);
 	assert(getPlayer(player->peer_id) == NULL);
@@ -166,7 +164,6 @@ void Environment::addPlayer(Player *player)
 
 void Environment::removePlayer(u16 peer_id)
 {
-	DSTACK(__FUNCTION_NAME);
 re_search:
 	for(core::list<Player*>::Iterator i = m_players.begin();
 			i != m_players.end(); i++)

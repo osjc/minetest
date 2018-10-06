@@ -239,7 +239,6 @@ void FixedHeightmap::DiamondSquare(f32 randmax, f32 randfactor)
 void FixedHeightmap::generateContinued(f32 randmax, f32 randfactor,
 		f32 *corners)
 {
-	DSTACK(__FUNCTION_NAME);
 	/*dstream<<"FixedHeightmap("<<m_pos_on_master.X
 			<<","<<m_pos_on_master.Y
 			<<")::generateContinued()"<<std::endl;*/
@@ -516,7 +515,6 @@ void UnlimitedHeightmap::print()
 	
 FixedHeightmap * UnlimitedHeightmap::getHeightmap(v2s16 p_from, bool generate)
 {
-	DSTACK("UnlimitedHeightmap::getHeightmap()");
 	/*
 		We want to check that all neighbours of the wanted heightmap
 		exist.

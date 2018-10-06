@@ -67,8 +67,6 @@ public:
 	*/
 	void addBlock(u16 peer_id, v3s16 pos, u8 flags)
 	{
-		DSTACK(__FUNCTION_NAME);
-	
 		JMutexAutoLock lock(m_mutex);
 
 		if(peer_id != 0)

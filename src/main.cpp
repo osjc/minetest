@@ -419,18 +419,6 @@ public:
 						dstream<<DTIME<<"Enabled full viewing range"<<std::endl;
 					}
 				}
-
-				// Print debug stacks
-				if(event.KeyInput.Key == irr::KEY_KEY_P
-						&& g_game_focused)
-				{
-					dstream<<"-----------------------------------------"
-							<<std::endl;
-					dstream<<DTIME<<"Printing debug stacks:"<<std::endl;
-					dstream<<"-----------------------------------------"
-							<<std::endl;
-					debug_stacks_print();
-				}
 			}
 		}
 
@@ -894,13 +882,6 @@ int main(int argc, char *argv[])
 		Low-level initialization
 	*/
 
-	// Initialize debug streams
-	debugstreams_init(DEBUGFILE);
-	// Initialize debug stacks
-	debug_stacks_init();
-
-	DSTACK(__FUNCTION_NAME);
-
 	try
 	{
 	
@@ -995,8 +976,6 @@ int main(int argc, char *argv[])
 	
 	if(dedicated)
 	{
-		DSTACK("Dedicated server branch");
-		
 		std::cout<<std::endl;
 		std::cout<<"========================"<<std::endl;
 		std::cout<<"Running dedicated server"<<std::endl;

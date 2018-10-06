@@ -42,8 +42,6 @@ InventoryItem::~InventoryItem()
 
 InventoryItem* InventoryItem::deSerialize(std::istream &is)
 {
-	DSTACK(__FUNCTION_NAME);
-
 	//is.imbue(std::locale("C"));
 	// Read name
 	std::string name;

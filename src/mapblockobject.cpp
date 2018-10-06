@@ -48,16 +48,6 @@ void MapBlockObject::setBlockChanged()
 */
 void MovingObject::move(float dtime, v3f acceleration)
 {
-	DSTACK("%s: typeid=%i, pos=(%f,%f,%f), speed=(%f,%f,%f)"
-			", dtime=%f, acc=(%f,%f,%f)",
-			__FUNCTION_NAME,
-			getTypeId(),
-			m_pos.X, m_pos.Y, m_pos.Z,
-			m_speed.X, m_speed.Y, m_speed.Z,
-			dtime,
-			acceleration.X, acceleration.Y, acceleration.Z
-			);
-	
 	v3s16 oldpos_i = floatToInt(m_pos);
 	
 	if(m_block->isValidPosition(oldpos_i) == false)
@@ -501,23 +491,16 @@ MapBlockObject * MapBlockObjectList::get(s16 id)
 
 void MapBlockObjectList::step(float dtime, bool server)
 {
-	DSTACK(__FUNCTION_NAME);
-	
 	JMutexAutoLock lock(m_mutex);
 	
 	core::map<s16, bool> ids_to_delete;
 
 	{
-		DSTACK("%s: stepping objects", __FUNCTION_NAME);
-
 		for(core::map<s16, MapBlockObject*>::Iterator
 				i = m_objects.getIterator();
 				i.atEnd() == false; i++)
 		{
 			MapBlockObject *obj = i.getNode()->getValue();
-			
-			DSTACK("%s: stepping object type %i", __FUNCTION_NAME,
-					obj->getTypeId());
 
 			if(server)
 			{
@@ -534,8 +517,6 @@ void MapBlockObjectList::step(float dtime, bool server)
 	}
 
 	{
-		DSTACK("%s: deleting objects", __FUNCTION_NAME);
-
 		// Delete objects in delete queue
 		for(core::map<s16, bool>::Iterator
 				i = ids_to_delete.getIterator();
@@ -558,8 +539,6 @@ void MapBlockObjectList::step(float dtime, bool server)
 		return;
 	
 	{
-		DSTACK("%s: object wrap loop", __FUNCTION_NAME);
-
 		for(core::map<s16, MapBlockObject*>::Iterator
 				i = m_objects.getIterator();
 				i.atEnd() == false; i++)
@@ -590,8 +569,6 @@ void MapBlockObjectList::step(float dtime, bool server)
 
 bool MapBlockObjectList::wrapObject(MapBlockObject *object)
 {
-	DSTACK(__FUNCTION_NAME);
-	
 	// No lock here; this is called so that the lock is already locked.
 	//JMutexAutoLock lock(m_mutex);
 

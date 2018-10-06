@@ -32,8 +32,6 @@ void * ClientUpdateThread::Thread()
 {
 	ThreadStarted();
 
-	DSTACK(__FUNCTION_NAME);
-
 #if CATCH_UNHANDLED_EXCEPTIONS
 	try
 	{
@@ -115,7 +113,6 @@ Client::~Client()
 
 void Client::connect(Address address)
 {
-	DSTACK(__FUNCTION_NAME);
 	JMutexAutoLock lock(m_con_mutex);
 	m_con.setTimeoutMs(0);
 	m_con.Connect(address);
@@ -136,8 +133,6 @@ bool Client::connectedAndInitialized()
 
 void Client::step(float dtime)
 {
-	DSTACK(__FUNCTION_NAME);
-	
 	// Limit a bit
 	if(dtime > 2.0)
 		dtime = 2.0;
@@ -398,7 +393,6 @@ void Client::step(float dtime)
 
 float Client::asyncStep()
 {
-	DSTACK(__FUNCTION_NAME);
 	//dstream<<"Client::asyncStep()"<<std::endl;
 	
 	/*float dtime;
@@ -429,7 +423,6 @@ void Client::deletingPeer(con::Peer *peer, bool timeout)
 
 void Client::ReceiveAll()
 {
-	DSTACK(__FUNCTION_NAME);
 	for(;;)
 	{
 		try{
@@ -452,7 +445,6 @@ void Client::ReceiveAll()
 
 void Client::Receive()
 {
-	DSTACK(__FUNCTION_NAME);
 	u32 data_maxsize = 10000;
 	Buffer<u8> data(data_maxsize);
 	u16 sender_peer_id;
@@ -471,8 +463,6 @@ void Client::Receive()
 */
 void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 {
-	DSTACK(__FUNCTION_NAME);
-
 	// Ignore packets that don't even fit a command
 	if(datasize < 2)
 	{
@@ -977,8 +967,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 */
 bool Client::AsyncProcessPacket(LazyMeshUpdater &mesh_updater)
 {
-	DSTACK(__FUNCTION_NAME);
-	
 	try //for catching con::PeerNotFoundException
 	{
 
