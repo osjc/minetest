@@ -256,36 +256,131 @@ bool g_viewing_range_all = false;
 
 Settings g_settings;
 
-// Sets default settings
-void set_default_settings()
+static const char *ToString(u16 Num, char *Dest)
 {
-	g_settings.set("dedicated_server", "");
+  const char *Result;
+  char Data[5];
+  char *Ptr;
+  u8 Count;
 
-	// Client stuff
-	g_settings.set("wanted_fps", "30");
-	g_settings.set("fps_max", "60");
-	g_settings.set("viewing_range_nodes_max", "300");
-	g_settings.set("viewing_range_nodes_min", "20");
-	g_settings.set("screenW", "");
-	g_settings.set("screenH", "");
-	g_settings.set("host_game", "");
-	g_settings.set("port", "");
-	g_settings.set("address", "");
-	g_settings.set("name", "");
-	g_settings.set("random_input", "false");
-	g_settings.set("client_delete_unused_sectors_timeout", "1200");
+  Count=0;
+  Ptr=Data;
+  do {
+    Ptr[0]=Num%10 + '0';
+    Ptr++;
+    Num/=10;
+    Count++;
+  } while (Num>0);
+  Result=Dest;
+  do {
+    Ptr--;
+    Dest[0]=Ptr[0];
+    Dest++;
+    Count--;
+  } while (Count>0);
+  Dest[0]='\0';
+  return Result;
+}
 
-	// Server stuff
-	g_settings.set("creative_mode", "false");
-	g_settings.set("height_randmax", "constant 70.0");
-	g_settings.set("height_randfactor", "constant 0.6");
-	g_settings.set("height_base", "linear 0 35 0");
-	g_settings.set("plants_amount", "1.0");
-	g_settings.set("ravines_amount", "1.0");
-	g_settings.set("objectdata_interval", "0.2");
-	g_settings.set("active_object_range", "2");
-	g_settings.set("max_simultaneous_block_sends_per_client", "1");
-	g_settings.set("max_simultaneous_block_sends_server_total", "4");
+void SetConfiguration(TConfiguration *C)
+{
+  char Buffer[80];
+
+  // Client stuff
+  g_settings.set(
+    "dedicated_server",
+    C->DedicatedServer? "yes" : "no"
+  );
+  g_settings.set(
+    "wanted_fps",
+    ToString(C->WantedFps, Buffer)
+  );
+  g_settings.set(
+    "fps_max",
+    ToString(C->MaximalFps, Buffer)
+  );
+  g_settings.set(
+    "viewing_range_nodes_min",
+    ToString(C->ViewRangeMin, Buffer)
+  );
+  g_settings.set(
+    "viewing_range_nodes_max",
+    ToString(C->ViewRangeMax, Buffer)
+  );
+  g_settings.set(
+    "screenW",
+    ToString(C->ScreenWidth, Buffer)
+  );
+  g_settings.set(
+    "screenH",
+    ToString(C->ScreenWidth, Buffer)
+  );
+  g_settings.set(
+    "host_game",
+    C->HostGame? "yes" : "no"
+  );
+  g_settings.set(
+    "address",
+    C->Address
+  );
+  g_settings.set(
+    "port",
+    ToString(C->Port, Buffer)
+  );
+  g_settings.set(
+    "name",
+    C->Name
+  );
+  g_settings.set(
+    "random_input",
+    C->RandomInput? "yes" : "no"
+  );
+  g_settings.set(
+    "client_delete_unused_sectors_timeout",
+    ToString(C->DeleteUnusedSectorTimeout, Buffer)
+  );
+
+  // Server stuff
+  g_settings.set(
+    "creative_mode",
+    C->CreativeMode? "yes" : "no"
+  );
+  g_settings.set(
+    "height_randmax",
+    C->HeightRandMax
+  );
+  g_settings.set(
+    "height_randfactor",
+    C->HeightRandFactor
+  );
+  g_settings.set(
+    "height_base",
+    C->HeightBase
+  );
+  g_settings.set(
+    "plants_amount",
+    C->PlantsAmount
+  );
+  g_settings.set(
+    "ravines_amount",
+    C->RavinesAmount
+  );
+  g_settings.set(
+    "objectdata_interval",
+    C->ObjectDataInterval
+  );
+  g_settings.set(
+    "active_object_range",
+    C->ActiveObjectRange
+  );
+  g_settings.set(
+    "max_simultaneous_block_sends_per_client",
+    ToString(C->MaxBlockSendsPerClient, Buffer)
+  );
+  g_settings.set(
+    "max_simultaneous_block_sends_server_total",
+    ToString(C->MaxBlockSendsTotal, Buffer)
+  );
 }
 
 /*
@@ -875,7 +970,7 @@ private:
 	s32 m_selection;
 };
 
-int RunMainCode(int argc, char *argv[])
+int RunMainCode(int argc, char *argv[], TConfiguration *C)
 {
 	/*
 		Low-level initialization
@@ -888,9 +983,6 @@ int RunMainCode(int argc, char *argv[])
 		Basic initialization
 	*/
 
-	// Initialize default settings
-	set_default_settings();
-	
 	// Print startup message
 	dstream<<DTIME<<"minetest-c55"
 			" with SER_FMT_VER_HIGHEST="<<(int)SER_FMT_VER_HIGHEST
@@ -917,27 +1009,8 @@ int RunMainCode(int argc, char *argv[])
 		Initialization
 	*/
 
-	// Read config file
-	
-	if(argc >= 2)
-	{
-		g_settings.readConfigFile(argv[1]);
-	}
-	else
-	{
-		const char *filenames[2] =
-		{
-			"../minetest.conf",
-			"../../minetest.conf"
-		};
-
-		for(u32 i=0; i<2; i++)
-		{
-			bool r = g_settings.readConfigFile(filenames[i]);
-			if(r)
-				break;
-		}
-	}
+	// Prepare config file
+	SetConfiguration(C);
 
 	// Initialize random seed
 	srand(time(0));
@@ -2154,10 +2227,10 @@ int RunMainCode(int argc, char *argv[])
 }
 
 extern "C"
-int MainCPP(int argc, char *argv[])
+int MainCPP(int argc, char *argv[], TConfiguration *C)
 {
 	try {
-		return RunMainCode(argc, argv);
+		return RunMainCode(argc, argv, C);
 	} catch(...) {
 		return -1;
 	}

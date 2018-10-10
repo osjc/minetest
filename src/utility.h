@@ -648,63 +648,6 @@ class Settings
 {
 public:
 
-	// Returns false on EOF
-	bool parseConfigObject(std::istream &is)
-	{
-		if(is.eof())
-			return false;
-		
-		// NOTE: This function will be expanded to allow multi-line settings
-		std::string line;
-		std::getline(is, line);
-		//dstream<<"got line: \""<<line<<"\""<<std::endl;
-
-		std::string trimmedline = trim(line);
-		
-		// Ignore comments
-		if(trimmedline[0] == '#')
-			return true;
-
-		//dstream<<"trimmedline=\""<<trimmedline<<"\""<<std::endl;
-
-		Strfnd sf(trim(line));
-
-		std::string name = sf.next("=");
-		name = trim(name);
-
-		if(name == "")
-			return true;
-		
-		std::string value = sf.next("\n");
-		value = trim(value);
-
-		dstream<<"Config name=\""<<name<<"\" value=\""
-				<<value<<"\""<<std::endl;
-		
-		m_settings[name] = value;
-		
-		return true;
-	}
-
-	// Returns true on success
-	bool readConfigFile(const char *filename)
-	{
-		std::ifstream is(filename);
-		if(is.good() == false)
-		{
-			dstream<<"Error opening configuration file: "
-					<<filename<<std::endl;
-			return false;
-		}
-
-		dstream<<"Parsing configuration file: "
-				<<filename<<std::endl;
-				
-		while(parseConfigObject(is));
-		
-		return true;
-	}
-
 	void set(std::string name, std::string value)
 	{
 		m_settings[name] = value;

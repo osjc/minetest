@@ -26,8 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include "inventory.h"
-
-#define PLAYERNAME_SIZE 20
+#include "config.h"
 
 class Map;
 

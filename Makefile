@@ -26,6 +26,8 @@ TARGET = minerworld
 FASTTARGET = minerworld-fast
 
 C_SOURCE_FILES = \
+	serstrm.c \
+	config.c \
 	startup.c
 
 CPP_SOURCE_FILES = \

@@ -7,23 +7,23 @@
 # By default, all the settings are commented and not functional.
 # Uncomment settings by removing the preceding #.
 
-#dedicated_server =
+#DedicatedServer =
 
 # Client side stuff
 
-#wanted_fps = 30
-#fps_max = 60
-#viewing_range_nodes_max = 300
-#viewing_range_nodes_min = 20
-#screenW = 
-#screenH = 
-#host_game = 
-#port = 30000
-#address = kray.dy.fi
-#name = 
+#WantedFps = 30
+#MaximalFps = 60
+#ViewRangeMin = 20
+#ViewRangeMax = 300
+#ScreenWidth = 
+#ScreenHeight = 
+#HostGame = 
+#Address = kray.dy.fi
+#Port = 30000
+#Name = 
 
-#random_input = false
-#client_delete_unused_sectors_timeout = 1200
+#RandomInput = false
+#DeleteUnusedSectorTimeout = 1200
 
 # Server side stuff
 
@@ -36,19 +36,18 @@
 # H=slope.dot(pos^power):
 #     power <height> <slope.X> <slope.Y> <power>
 
-#height_randmax = constant 70.0
-#height_randfactor = constant 0.6
-#height_base = linear 0 35 0
-#plants_amount = 1.0
-#ravines_amount = 1.0
+#HeightRandMax = constant 70.0
+#HeightRandFactor = constant 0.6
+#HeightBase = linear 0 35 0
+#PlantsAmount = 1.0
+#RavinesAmount = 1.0
 
 # Set to true to enable creative mode (unlimited inventory)
-#creative_mode = false
+#CreativeMode = false
 # Player and object positions are sent at intervals specified by this
-#objectdata_inverval = 0.2
+#ObjectDataInverval = 0.2
 
-#active_object_range = 2
+#ActiveObjectRange = 2
 
-#max_simultaneous_block_sends_per_client = 1
-#max_simultaneous_block_sends_server_total = 4
-
+#MaxBlockSendsPerClient = 1
+#MaxBlockSendsTotal = 4
