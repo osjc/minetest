@@ -36,7 +36,6 @@
 # H=slope.dot(pos^power):
 #     power <height> <slope.X> <slope.Y> <power>
 
-#mapgen_heightmap_blocksize = 64
 #height_randmax = constant 70.0
 #height_randfactor = constant 0.6
 #height_base = linear 0 35 0

@@ -277,7 +277,6 @@ void set_default_settings()
 
 	// Server stuff
 	g_settings.set("creative_mode", "false");
-	g_settings.set("heightmap_blocksize", "128");
 	g_settings.set("height_randmax", "constant 70.0");
 	g_settings.set("height_randfactor", "constant 0.6");
 	g_settings.set("height_base", "linear 0 35 0");
@@ -949,7 +948,7 @@ int RunMainCode(int argc, char *argv[])
 	// Read map parameters from settings
 
 	HMParams hm_params;
-	hm_params.blocksize = g_settings.getU16("heightmap_blocksize");
+	hm_params.blocksize = 128;
 	hm_params.randmax = g_settings.get("height_randmax");
 	hm_params.randfactor = g_settings.get("height_randfactor");
 	hm_params.base = g_settings.get("height_base");
