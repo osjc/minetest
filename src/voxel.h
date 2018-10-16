@@ -112,13 +112,13 @@ public:
 
 	void print(std::ostream &o)
 	{
-		o<<"("<<MinEdge.X
-		 <<","<<MinEdge.Y
-		 <<","<<MinEdge.Z
-		 <<")("<<MaxEdge.X
-		 <<","<<MaxEdge.Y
-		 <<","<<MaxEdge.Z
-		 <<")";
+		o<<"("<<MinEdge.X;
+		o<<","<<MinEdge.Y;
+		o<<","<<MinEdge.Z;
+		o<<")("<<MaxEdge.X;
+		o<<","<<MaxEdge.Y;
+		o<<","<<MaxEdge.Z;
+		o<<")";
 	}
 
 	// Edges are inclusive

@@ -67,10 +67,13 @@ Client::Client(IrrlichtDevice *device, video::SMaterial *materials,
 		float delete_unused_sectors_timeout,
 		const char *playername):
 	m_thread(this),
-	m_env(new ClientMap(this, materials,
+	m_env(
+		new ClientMap(this, materials,
 			device->getSceneManager()->getRootSceneNode(),
-			device->getSceneManager(), 666),
-			dout_client),
+			device->getSceneManager(), 666
+		),
+		dout_client
+	),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_device(device),
 	camera_position(0,0,0),
@@ -196,15 +199,15 @@ void Client::step(float dtime)
 			
 			// Delete whole sectors
 			u32 num = m_env.getMap().deleteUnusedSectors
-					(m_delete_unused_sectors_timeout,
-					false, &deleted_blocks);
+				(m_delete_unused_sectors_timeout,
+				false, &deleted_blocks);
 
 			if(num > 0)
 			{
 				/*dstream<<DTIME<<"Client: Deleted blocks of "<<num
 						<<" unused sectors"<<std::endl;*/
 				dstream<<DTIME<<"Client: Deleted "<<num
-						<<" unused sectors"<<std::endl;
+					<<" unused sectors"<<std::endl;
 				
 				/*
 					Send info to server
@@ -233,10 +236,11 @@ void Client::step(float dtime)
 						writeU16(&reply[0], TOSERVER_DELETEDBLOCKS);
 						reply[2] = sendlist.size();
 						u32 k = 0;
-						for(core::list<v3s16>::Iterator
-								j = sendlist.begin();
-								j != sendlist.end(); j++)
-						{
+						for(
+							core::list<v3s16>::Iterator j = sendlist.begin();
+							j != sendlist.end();
+							j++
+						) {
 							writeV3S16(&reply[2+1+6*k], *j);
 							k++;
 						}
@@ -304,10 +308,11 @@ void Client::step(float dtime)
 		m_env.step(dtime);
 
 		// Step active blocks
-		for(core::map<v3s16, bool>::Iterator
-				i = m_active_blocks.getIterator();
-				i.atEnd() == false; i++)
-		{
+		for(
+			core::map<v3s16, bool>::Iterator i = m_active_blocks.getIterator();
+			i.atEnd() == false;
+			i++
+		) {
 			v3s16 p = i.getNode()->getKey();
 
 			MapBlock *block = NULL;
@@ -413,13 +418,13 @@ float Client::asyncStep()
 void Client::peerAdded(con::Peer *peer)
 {
 	derr_client<<"Client::peerAdded(): peer->id="
-			<<peer->id<<std::endl;
+		<<peer->id<<std::endl;
 }
 void Client::deletingPeer(con::Peer *peer, bool timeout)
 {
 	derr_client<<"Client::deletingPeer(): "
-			"Server Peer is getting deleted "
-			<<"(timeout="<<timeout<<")"<<std::endl;
+		"Server Peer is getting deleted "
+		<<"(timeout="<<timeout<<")"<<std::endl;
 }
 
 void Client::ReceiveAll()
@@ -437,8 +442,8 @@ void Client::ReceiveAll()
 		catch(con::InvalidIncomingDataException &e)
 		{
 			dout_client<<DTIME<<"Client::ReceiveAll(): "
-					"InvalidIncomingDataException: what()="
-					<<e.what()<<std::endl;
+				"InvalidIncomingDataException: what()="
+				<<e.what()<<std::endl;
 		}
 		//TODO: Testing
 		//break;
@@ -487,8 +492,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	if(sender_peer_id != PEER_ID_SERVER)
 	{
 		dout_client<<DTIME<<"Client::ProcessData(): Discarding data not "
-				"coming from server: peer_id="<<sender_peer_id
-				<<std::endl;
+			"coming from server: peer_id="<<sender_peer_id
+			<<std::endl;
 		return;
 	}
 
@@ -506,13 +511,14 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		u8 deployed = data[2];
 
 		dout_client<<DTIME<<"Client: TOCLIENT_INIT received with "
-				"deployed="<<((int)deployed&0xff)<<std::endl;
+			"deployed="<<((int)deployed&0xff)<<std::endl;
 
-		if(deployed < SER_FMT_VER_LOWEST
-				|| deployed > SER_FMT_VER_HIGHEST)
-		{
+		if(
+			deployed < SER_FMT_VER_LOWEST
+			|| deployed > SER_FMT_VER_HIGHEST
+		) {
 			derr_client<<DTIME<<"Client: TOCLIENT_INIT: Server sent "
-					<<"unsupported ser_fmt_ver"<<std::endl;
+				<<"unsupported ser_fmt_ver"<<std::endl;
 			return;
 		}
 		
@@ -546,8 +552,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	if(ser_version == SER_FMT_VER_INVALID)
 	{
 		dout_client<<DTIME<<"WARNING: Client: Server serialization"
-				" format invalid or not initialized."
-				" Skipping incoming command="<<command<<std::endl;
+			" format invalid or not initialized."
+			" Skipping incoming command="<<command<<std::endl;
 		return;
 	}
 	
@@ -558,7 +564,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	if(command == TOCLIENT_PLAYERPOS)
 	{
 		dstream<<"WARNING: Received deprecated TOCLIENT_PLAYERPOS"
-				<<std::endl;
+			<<std::endl;
 		/*u16 our_peer_id;
 		{
 			JMutexAutoLock lock(m_con_mutex);
@@ -567,8 +573,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		// Cancel if we don't have a peer id
 		if(our_peer_id == PEER_ID_NEW){
 			dout_client<<DTIME<<"TOCLIENT_PLAYERPOS cancelled: "
-					"we have no peer id"
-					<<std::endl;
+				"we have no peer id"
+				<<std::endl;
 			return;
 		}*/
 
@@ -633,8 +639,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		// Cancel if we don't have a peer id
 		if(our_peer_id == PEER_ID_NEW){
 			dout_client<<DTIME<<"TOCLIENT_PLAYERINFO cancelled: "
-					"we have no peer id"
-					<<std::endl;
+				"we have no peer id"
+				<<std::endl;
 			return;
 		}
 		
@@ -1648,8 +1654,8 @@ MapBlockObject * Client::getSelectedObject(
 		v3s16 block_pos_i_on_map = block->getPosRelative();
 		v3f block_pos_f_on_map = intToFloat(block_pos_i_on_map);
 		core::line3d<f32> shootline_on_block(
-				shootline_on_map.start - block_pos_f_on_map,
-				shootline_on_map.end - block_pos_f_on_map
+			shootline_on_map.start - block_pos_f_on_map,
+			shootline_on_map.end - block_pos_f_on_map
 		);
 
 		if(obj->isSelected(shootline_on_block))

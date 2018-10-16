@@ -77,19 +77,17 @@ public:
 inline std::string trim(std::string str)
 {
     while( 
-            str.length()>0
-            &&
-            (
-             str.substr(0,               1)==" "     ||
-             str.substr(0,               1)=="\t"    ||
-             str.substr(0,               1)=="\r"    ||
-             str.substr(0,               1)=="\n"    ||
-             str.substr(str.length()-1,  1)==" "     ||
-             str.substr(str.length()-1,  1)=="\t"    ||
-             str.substr(str.length()-1,  1)=="\r"    ||
-             str.substr(str.length()-1,  1)=="\n"
-            )
-         )
+        str.length()>0 && (
+            str.substr(0,               1)==" "     ||
+            str.substr(0,               1)=="\t"    ||
+            str.substr(0,               1)=="\r"    ||
+            str.substr(0,               1)=="\n"    ||
+            str.substr(str.length()-1,  1)==" "     ||
+            str.substr(str.length()-1,  1)=="\t"    ||
+            str.substr(str.length()-1,  1)=="\r"    ||
+            str.substr(str.length()-1,  1)=="\n"
+        )
+    )
     {  
         if      (str.substr(0,              1)==" ")
 			str = str.substr(1,str.length()-1);

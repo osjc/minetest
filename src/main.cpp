@@ -38,13 +38,12 @@ TODO: Stop player if focus of window is taken away (go to pause mode)
 TODO: Optimize and fix makeFastFace or whatever it's called
       - Face calculation is the source of CPU usage on the client
 SUGGESTION: The client will calculate and send lighting changes and
-  the server will randomly check some of them and kick the client out
-  if it fails to calculate them right.
-  - Actually, it could just start ignoring them and calculate them
-    itself.
+            the server will randomly check some of them and kick the
+            client out if it fails to calculate them right.
+- Actually, it could just start ignoring them and calculate them itself.
 SUGGESTION: Combine MapBlock's face caches to so big pieces that VBO
             gets used
-            - That is >500 vertices
+- That is >500 vertices
 
 TODO: Better dungeons
 TODO: There should be very slight natural caves also, starting from
@@ -54,10 +53,8 @@ TODO: Changing of block with mouse wheel or something
 TODO: Menus
 
 TODO: Mobs
-      - Server:
-        - One single map container with ids as keys
-      - Client:
-	    - ?
+      - Server: One single map container with ids as keys
+      - Client: ?
 TODO: - Keep track of the place of the mob in the last few hundreth's
         of a second - then, if a player hits it, take the value that is
 		avg_rtt/2 before the moment the packet is received.
@@ -122,14 +119,13 @@ TODO: Make fetching sector's blocks more efficient when rendering
 TODO: Make the video backend selectable
 
 Block object server side:
-      - A "near blocks" buffer, in which some nearby blocks are stored.
-	  - For all blocks in the buffer, objects are stepped(). This
-	    means they are active.
-	  - TODO: A global active buffer is needed for the server
-      - TODO: All blocks going in and out of the buffer are recorded.
-	    - TODO: For outgoing blocks, a timestamp is written.
-	    - TODO: For incoming blocks, the time difference is calculated and
-	      objects are stepped according to it.
+- A "near blocks" buffer, in which some nearby blocks are stored. For all
+  blocks in the buffer, objects are stepped(). This means they are active.
+- TODO: A global active buffer is needed for the server
+- TODO: All blocks going in and out of the buffer are recorded.
+- TODO: For outgoing blocks, a timestamp is written.
+- TODO: For incoming blocks, the time difference is calculated and
+  objects are stepped according to it.
 TODO: A timestamp to blocks
 
 SUGG: Add a time value to the param of footstepped grass and check it

@@ -90,8 +90,8 @@ void VoxelManipulator::print(std::ostream &o)
 {
 	v3s16 em = m_area.getExtent();
 	v3s16 of = m_area.MinEdge;
-	o<<"size: "<<em.X<<"x"<<em.Y<<"x"<<em.Z
-	 <<" offset: ("<<of.X<<","<<of.Y<<","<<of.Z<<")"<<std::endl;
+	o<<"size: "<<em.X<<"x"<<em.Y<<"x"<<em.Z;
+	o<<" offset: ("<<of.X<<","<<of.Y<<","<<of.Z<<")"<<std::endl;
 	
 	for(s32 y=m_area.MinEdge.Y; y<=m_area.MaxEdge.Y; y++)
 	{

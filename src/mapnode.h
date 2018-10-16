@@ -57,8 +57,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Materials-todo:
 
 	GRAVEL
-	  - Dynamics of gravel: if there is a drop of more than two
-	    blocks on any side, it will drop in there. Is this doable?
+	- Dynamics of gravel: if there is a drop of more than two
+	  blocks on any side, it will drop in there. Is this doable?
 */
 
 enum Material
