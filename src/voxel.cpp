@@ -182,58 +182,6 @@ void VoxelManipulator::interpolate(VoxelArea area)
 	}
 }
 
-#if 0
-void VoxelManipulator::blitFromNodeContainer
-		(v3s16 p_from, v3s16 p_to, v3s16 size, NodeContainer *c)
-{
-	VoxelArea a_to(p_to, p_to+size-v3s16(1,1,1));
-	addArea(a_to);
-	for(s16 z=0; z<size.Z; z++)
-	for(s16 y=0; y<size.Y; y++)
-	for(s16 x=0; x<size.X; x++)
-	{
-		v3s16 p(x,y,z);
-		try{
-			MapNode n = c->getNode(p_from + p);
-			m_data[m_area.index(p_to + p)] = n;
-		}
-		catch(InvalidPositionException &e)
-		{
-		}
-		
-		/*v3s16 p(x,y,z);
-		MapNode n(MATERIAL_IGNORE);
-		try{
-			n = c->getNode(p_from + p);
-		}
-		catch(InvalidPositionException &e)
-		{
-		}
-		m_data[m_area.index(p_to + p)] = n;*/
-	}
-}
-
-void VoxelManipulator::blitToNodeContainer
-		(v3s16 p_from, v3s16 p_to, v3s16 size, NodeContainer *c)
-{
-	for(s16 z=0; z<size.Z; z++)
-	for(s16 y=0; y<size.Y; y++)
-	for(s16 x=0; x<size.X; x++)
-	{
-		v3s16 p(x,y,z);
-		try{
-			MapNode &n = m_data[m_area.index(p_from + p)];
-			if(n.d == MATERIAL_IGNORE)
-				continue;
-			c->setNode(p_to + p, n);
-		}
-		catch(InvalidPositionException &e)
-		{
-		}
-	}
-}
-#endif
-
 /*
 	MapVoxelManipulator
 */

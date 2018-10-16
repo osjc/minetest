@@ -39,7 +39,6 @@ void * ServerThread::Thread()
 		try{
 			m_server->AsyncRunStep();
 		
-			//dout_server<<"Running m_server->Receive()"<<std::endl;
 			m_server->Receive();
 		}
 		catch(con::NoIncomingDataException &e)
@@ -88,8 +87,6 @@ void * EmergeThread::Thread()
 
 		v3s16 &p = q->pos;
 		
-		//derr_server<<"EmergeThread::Thread(): running"<<std::endl;
-		
 		/*
 			Try to emerge it from somewhere.
 
@@ -110,8 +107,6 @@ void * EmergeThread::Thread()
 			core::map<u16, u8>::Iterator i;
 			for(i=q->peer_ids.getIterator(); i.atEnd()==false; i++)
 			{
-				//u16 peer_id = i.getNode()->getKey();
-
 				// Check flags
 				u8 flags = i.getNode()->getValue();
 				if((flags & TOSERVER_GETBLOCK_FLAG_OPTIONAL) == false)
@@ -120,10 +115,6 @@ void * EmergeThread::Thread()
 			}
 		}
 
-		/*dstream<<"EmergeThread: p="
-				<<"("<<p.X<<","<<p.Y<<","<<p.Z<<") "
-				<<"optional="<<optional<<std::endl;*/
-		
 		ServerMap &map = ((ServerMap&)m_server->m_env.getMap());
 			
 		core::map<v3s16, MapBlock*> changed_blocks;
@@ -137,8 +128,6 @@ void * EmergeThread::Thread()
 
 		JMutexAutoLock envlock(m_server->m_env_mutex);
 
-		//TimeTaker timer("block emerge envlock", g_device);
-			
 		try{
 			bool only_from_disk = false;
 			
@@ -154,7 +143,6 @@ void * EmergeThread::Thread()
 			// If it is a dummy, block was not found on disk
 			if(block->isDummy())
 			{
-				//dstream<<"EmergeThread: Got a dummy block"<<std::endl;
 				got_block = false;
 			}
 		}
@@ -192,10 +180,6 @@ void * EmergeThread::Thread()
 				MapBlock *block = i.getNode()->getValue();
 				modified_blocks.insert(block->getPos(), block);
 			}
-			
-			/*dstream<<"lighting "<<lighting_invalidated_blocks.size()
-					<<" blocks"<<std::endl;
-			TimeTaker timer("** updateLighting", g_device);*/
 			
 			// Update lighting without locking the environment mutex,
 			// add modified blocks to changed blocks
@@ -239,12 +223,6 @@ void * EmergeThread::Thread()
 				// Remove block from sent history
 				client->SetBlocksNotSent(modified_blocks);
 			}
-			
-			/*if(q->peer_ids.find(client->peer_id) != NULL)
-			{
-				// Decrement emerge queue count of client
-				client->BlockEmerged();
-			}*/
 		}
 		
 	}
@@ -274,7 +252,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 		if(m_blocks_sending.size() >= g_settings.getU16
 				("max_simultaneous_block_sends_per_client"))
 		{
-			//dstream<<"Not sending any blocks, Queue full."<<std::endl;
 			return;
 		}
 	}
@@ -335,26 +312,16 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 		}
 	}
 
-	// Serialization version used
-	//u8 ser_version = serialization_version;
-
-	//bool has_incomplete_blocks = false;
-	
 	/*
 		TODO: Get this from somewhere
 	*/
-	//s16 d_max = 7;
 	s16 d_max = 8;
 
 	//TODO: Get this from somewhere (probably a bigger value)
 	s16 d_max_gen = 5;
-	
-	//dstream<<"Starting from "<<d_start<<std::endl;
 
 	for(s16 d = d_start; d <= d_max; d++)
 	{
-		//dstream<<"RemoteClient::SendBlocks(): d="<<d<<std::endl;
-		
 		//if(has_incomplete_blocks == false)
 		{
 			JMutexAutoLock lock(m_blocks_sent_mutex);
@@ -409,9 +376,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				if(m_blocks_sending.size()
 						>= maximum_simultaneous_block_sends_now)
 				{
-					/*dstream<<"Not sending more blocks. Queue full. "
-							<<m_blocks_sending.size()
-							<<std::endl;*/
 					return;
 				}
 
@@ -461,12 +425,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			bool surely_not_found_on_disk = false;
 			if(block != NULL)
 			{
-				/*if(block->isIncomplete())
-				{
-					has_incomplete_blocks = true;
-					continue;
-				}*/
-
 				if(block->isDummy())
 				{
 					surely_not_found_on_disk = true;
@@ -488,9 +446,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			*/
 			if(block == NULL || surely_not_found_on_disk)
 			{
-				/*SharedPtr<JMutexAutoLock> lock
-						(m_num_blocks_in_emerge_queue.getLock());*/
-				
 				//TODO: Get value from somewhere
 				// Allow only one block in emerge queue
 				if(server->m_emerge_queue.peerItemCount(peer_id) < 1)
@@ -621,13 +576,11 @@ void RemoteClient::SendObjectData(
 	v3s16 center_nodepos = floatToInt(playerpos);
 	v3s16 center = getNodeBlockPos(center_nodepos);
 
-	//s16 d_max = ACTIVE_OBJECT_D_BLOCKS;
 	s16 d_max = g_settings.getS16("active_object_range");
 	
 	// Number of blocks whose objects were written to bos
 	u16 blockcount = 0;
 
-	//core::map<v3s16, MapBlock*> blocks;
 	std::ostringstream bos(std::ios_base::binary);
 
 	for(s16 d = 0; d <= d_max; d++)
@@ -699,11 +652,6 @@ void RemoteClient::SendObjectData(
 				// Add it to the emerge queue and trigger the thread.
 				// Fetch the block only if it is on disk.
 				
-				// Grab and increment counter
-				/*SharedPtr<JMutexAutoLock> lock
-						(m_num_blocks_in_emerge_queue.getLock());
-				m_num_blocks_in_emerge_queue.m_value++;*/
-				
 				// Add to queue as an anonymous fetch from disk
 				u8 flags = TOSERVER_GETBLOCK_FLAG_OPTIONAL;
 				server->m_emerge_queue.addBlock(0, p, flags);
@@ -724,8 +672,6 @@ skip_subsequent:
 	/*
 		Send data
 	*/
-	
-	//dstream<<"Server: Sending object data to "<<peer_id<<std::endl;
 
 	// Make data buffer
 	std::string s = os.str();
@@ -794,40 +740,6 @@ void RemoteClient::SetBlocksNotSent(core::map<v3s16, MapBlock*> &blocks)
 			m_blocks_sent.remove(p);
 	}
 }
-
-/*void RemoteClient::BlockEmerged()
-{
-	SharedPtr<JMutexAutoLock> lock(m_num_blocks_in_emerge_queue.getLock());
-	assert(m_num_blocks_in_emerge_queue.m_value > 0);
-	m_num_blocks_in_emerge_queue.m_value--;
-}*/
-
-/*void RemoteClient::RunSendingTimeouts(float dtime, float timeout)
-{
-	JMutexAutoLock sendinglock(m_blocks_sending_mutex);
-	
-	core::list<v3s16> remove_queue;
-	for(core::map<v3s16, float>::Iterator
-			i = m_blocks_sending.getIterator();
-			i.atEnd()==false; i++)
-	{
-		v3s16 p = i.getNode()->getKey();
-		float t = i.getNode()->getValue();
-		t += dtime;
-		i.getNode()->setValue(t);
-
-		if(t > timeout)
-		{
-			remove_queue.push_back(p);
-		}
-	}
-	for(core::list<v3s16>::Iterator
-			i = remove_queue.begin();
-			i != remove_queue.end(); i++)
-	{
-		m_blocks_sending.remove(*i);
-	}
-}*/
 
 /*
 	PlayerInfo
@@ -954,10 +866,6 @@ void Server::AsyncRunStep()
 			return;
 		m_step_dtime = 0.0;
 	}
-	
-	//dstream<<"Server steps "<<dtime<<std::endl;
-	
-	//dstream<<"Server::AsyncRunStep(): dtime="<<dtime<<std::endl;
 	{
 		// Has to be locked for peerAdded/Removed
 		JMutexAutoLock lock1(m_env_mutex);
@@ -996,23 +904,6 @@ void Server::AsyncRunStep()
 			}
 		}
 	}
-
-	// Run time- and client- related stuff
-	// NOTE: If you intend to add something here, check that it
-	// doesn't fit in RemoteClient::GetNextBlocks for example.
-	/*{
-		// Clients are behind connection lock
-		JMutexAutoLock lock(m_con_mutex);
-
-		for(core::map<u16, RemoteClient*>::Iterator
-			i = m_clients.getIterator();
-			i.atEnd() == false; i++)
-		{
-			RemoteClient *client = i.getNode()->getValue();
-			//con::Peer *peer = m_con.GetPeer(client->peer_id);
-			//client->RunSendingTimeouts(dtime, peer->resend_timeout);
-		}
-	}*/
 
 	// Send blocks to clients
 	SendBlocks(dtime);
@@ -1080,18 +971,6 @@ void Server::Receive()
 	}
 	catch(con::PeerNotFoundException &e)
 	{
-		//NOTE: This is not needed anymore
-		
-		// The peer has been disconnected.
-		// Find the associated player and remove it.
-
-		/*JMutexAutoLock envlock(m_env_mutex);
-
-		dout_server<<"ServerThread: peer_id="<<peer_id
-				<<" has apparently closed connection. "
-				<<"Removing player."<<std::endl;
-
-		m_env.removePlayer(peer_id);*/
 	}
 }
 
@@ -1112,7 +991,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		return;
 	}
 	
-	//u8 peer_ser_ver = peer->serialization_version;
 	u8 peer_ser_ver = getClient(peer->id)->serialization_version;
 
 	try
@@ -1145,7 +1023,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(deployed < SER_FMT_VER_LOWEST)
 			deployed = SER_FMT_VER_INVALID;
 
-		//peer->serialization_version = deployed;
 		getClient(peer->id)->pending_serialization_version = deployed;
 
 		if(deployed == SER_FMT_VER_INVALID)
@@ -1241,10 +1118,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		player->setSpeed(speed);
 		player->setPitch(pitch);
 		player->setYaw(yaw);
-		
-		/*dout_server<<"Server::ProcessData(): Moved player "<<peer_id<<" to "
-				<<"("<<position.X<<","<<position.Y<<","<<position.Z<<")"
-				<<" pitch="<<pitch<<" yaw="<<yaw<<std::endl;*/
 	}
 	else if(command == TOSERVER_GOTBLOCKS)
 	{
@@ -1266,8 +1139,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				throw con::InvalidIncomingDataException
 					("GOTBLOCKS length is too short");
 			v3s16 p = readV3S16(&data[2+1+i*6]);
-			/*dstream<<"Server: GOTBLOCKS ("
-					<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
 			RemoteClient *client = getClient(peer_id);
 			client->GotBlock(p);
 		}
@@ -1292,8 +1163,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				throw con::InvalidIncomingDataException
 					("DELETEDBLOCKS length is too short");
 			v3s16 p = readV3S16(&data[2+1+i*6]);
-			/*dstream<<"Server: DELETEDBLOCKS ("
-					<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
 			RemoteClient *client = getClient(peer_id);
 			client->SetBlockNotSent(p);
 		}
@@ -1316,7 +1185,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		p.Y = readS16(&data[5]);
 		p.Z = readS16(&data[7]);
 		s16 id = readS16(&data[9]);
-		//u16 item_i = readU16(&data[11]);
 
 		MapBlock *block = NULL;
 		try
@@ -1519,11 +1387,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			{
 				MapBlockObjectItem *oitem = (MapBlockObjectItem*)item;
 
-				/*dout_server<<"Trying to place a MapBlockObjectItem: "
-						"inventorystring=\""
-						<<oitem->getInventoryString()
-						<<"\""<<std::endl;*/
-
 				v3s16 blockpos = getNodeBlockPos(p_over);
 
 				MapBlock *block = NULL;
@@ -1543,10 +1406,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 				v3f pos = intToFloat(p_over);
 				pos -= block_pos_f_on_map;
-				
-				/*dout_server<<"pos="
-						<<"("<<pos.X<<","<<pos.Y<<","<<pos.Z<<")"
-						<<std::endl;*/
 
 
 				MapBlockObject *obj = oitem->createObject
@@ -1557,8 +1416,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 							<<std::endl;
 
 				block->addObject(obj);
-
-				//dout_server<<"Placed object"<<std::endl;
 
 				if(g_settings.getBool("creative_mode") == false)
 				{
@@ -1662,13 +1519,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 }
 
-/*void Server::Send(u16 peer_id, u16 channelnum,
-		SharedBuffer<u8> data, bool reliable)
-{
-	JMutexAutoLock lock(m_con_mutex);
-	m_con.Send(peer_id, channelnum, data, reliable);
-}*/
-
 void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
 {
 	/*
@@ -1694,107 +1544,6 @@ void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
 	*/
 	m_con.Send(peer_id, 1, reply, true);
 }
-
-/*void Server::SendBlock(u16 peer_id, MapBlock *block, u8 ver)
-{
-	JMutexAutoLock conlock(m_con_mutex);
-	
-	SendBlockNoLock(peer_id, block, ver);
-}*/
-
-#if 0
-void Server::SendSectorMeta(u16 peer_id, core::list<v2s16> ps, u8 ver)
-{
-	DSTACK(__FUNCTION_NAME);
-	dstream<<"Server sending sector meta of "
-			<<ps.getSize()<<" sectors"<<std::endl;
-
-	core::list<v2s16>::Iterator i = ps.begin();
-	core::list<v2s16> sendlist;
-	for(;;)
-	{
-		if(sendlist.size() == 255 || i == ps.end())
-		{
-			if(sendlist.size() == 0)
-				break;
-			/*
-				[0] u16 command
-				[2] u8 sector count
-				[3...] v2s16 pos + sector metadata
-			*/
-			std::ostringstream os(std::ios_base::binary);
-			u8 buf[4];
-
-			writeU16(buf, TOCLIENT_SECTORMETA);
-			os.write((char*)buf, 2);
-
-			writeU8(buf, sendlist.size());
-			os.write((char*)buf, 1);
-
-			for(core::list<v2s16>::Iterator
-					j = sendlist.begin();
-					j != sendlist.end(); j++)
-			{
-				// Write position
-				writeV2S16(buf, *j);
-				os.write((char*)buf, 4);
-				
-				/*
-					Write ClientMapSector metadata
-				*/
-
-				/*
-					[0] u8 serialization version
-					[1] s16 corners[0]
-					[3] s16 corners[1]
-					[5] s16 corners[2]
-					[7] s16 corners[3]
-					size = 9
-					
-					In which corners are in these positions
-					v2s16(0,0),
-					v2s16(1,0),
-					v2s16(1,1),
-					v2s16(0,1),
-				*/
-
-				// Write version
-				writeU8(buf, ver);
-				os.write((char*)buf, 1);
-
-				// Write corners
-				// TODO: Get real values
-				s16 corners[4];
-				((ServerMap&)m_env.getMap()).getSectorCorners(*j, corners);
-
-				writeS16(buf, corners[0]);
-				os.write((char*)buf, 2);
-				writeS16(buf, corners[1]);
-				os.write((char*)buf, 2);
-				writeS16(buf, corners[2]);
-				os.write((char*)buf, 2);
-				writeS16(buf, corners[3]);
-				os.write((char*)buf, 2);
-			}
-
-			SharedBuffer<u8> data((u8*)os.str().c_str(), os.str().size());
-
-			/*dstream<<"Server::SendSectorMeta(): sending packet"
-					" with "<<sendlist.size()<<" sectors"<<std::endl;*/
-
-			m_con.Send(peer_id, 1, data, true);
-
-			if(i == ps.end())
-				break;
-
-			sendlist.clear();
-		}
-
-		sendlist.push_back(*i);
-		i++;
-	}
-}
-#endif
 
 core::list<PlayerInfo> Server::getPlayerInfo()
 {
@@ -1840,9 +1589,6 @@ void Server::peerAdded(con::Peer *peer)
 	dout_server<<"Server::peerAdded(): peer->id="
 			<<peer->id<<std::endl;
 	
-	// Connection is already locked when this is called.
-	//JMutexAutoLock lock(m_con_mutex);
-	
 	// Error check
 	core::map<u16, RemoteClient*>::Node *n;
 	n = m_clients.find(peer->id);
@@ -1856,9 +1602,6 @@ void Server::peerAdded(con::Peer *peer)
 
 	// Create player
 	{
-		// Already locked when called
-		//JMutexAutoLock envlock(m_env_mutex);
-		
 		Player *player = m_env.getPlayer(peer->id);
 		
 		// The player shouldn't already exist
@@ -1949,9 +1692,6 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 {
 	dout_server<<"Server::deletingPeer(): peer->id="
 			<<peer->id<<", timeout="<<timeout<<std::endl;
-	
-	// Connection is already locked when this is called.
-	//JMutexAutoLock lock(m_con_mutex);
 
 	// Error check
 	core::map<u16, RemoteClient*>::Node *n;
@@ -1961,8 +1701,6 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 	
 	// Delete player
 	{
-		// Already locked when called
-		//JMutexAutoLock envlock(m_env_mutex);
 		m_env.removePlayer(peer->id);
 	}
 	
@@ -1995,8 +1733,6 @@ void Server::SendObjectData(float dtime)
 
 void Server::SendPlayerInfos()
 {
-	//JMutexAutoLock envlock(m_env_mutex);
-	
 	core::list<Player*> players = m_env.getPlayers();
 	
 	u32 player_count = players.getSize();
@@ -2012,15 +1748,10 @@ void Server::SendPlayerInfos()
 	{
 		Player *player = *i;
 
-		/*dstream<<"Server sending player info for player with "
-				"peer_id="<<player->peer_id<<std::endl;*/
-		
 		writeU16(&data[start], player->peer_id);
 		snprintf((char*)&data[start+2], PLAYERNAME_SIZE, "%s", player->getName());
 		start += 2+PLAYERNAME_SIZE;
 	}
-
-	//JMutexAutoLock conlock(m_con_mutex);
 
 	// Send as reliable
 	m_con.SendToAll(0, data, true);
@@ -2028,12 +1759,9 @@ void Server::SendPlayerInfos()
 
 void Server::SendInventory(u16 peer_id)
 {
-	//JMutexAutoLock envlock(m_env_mutex);
-	
 	Player* player = m_env.getPlayer(peer_id);
 
 	std::ostringstream os;
-	//os.imbue(std::locale("C"));
 
 	player->inventory.serialize(os);
 
@@ -2042,8 +1770,6 @@ void Server::SendInventory(u16 peer_id)
 	SharedBuffer<u8> data(s.size()+2);
 	writeU16(&data[0], TOCLIENT_INVENTORY);
 	memcpy(&data[2], s.c_str(), s.size());
-	
-	//JMutexAutoLock conlock(m_con_mutex);
 
 	// Send as reliable
 	m_con.Send(peer_id, 0, data, true);
@@ -2111,7 +1837,6 @@ void Server::SendBlocks(float dtime)
 
 RemoteClient* Server::getClient(u16 peer_id)
 {
-	//JMutexAutoLock lock(m_con_mutex);
 	core::map<u16, RemoteClient*>::Node *n;
 	n = m_clients.find(peer_id);
 	// A client should exist for all peers

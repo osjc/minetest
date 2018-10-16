@@ -133,9 +133,6 @@ SharedBuffer<u8> makeReliablePacket(
 		SharedBuffer<u8> data,
 		u16 seqnum)
 {
-	/*dstream<<"BEGIN SharedBuffer<u8> makeReliablePacket()"<<std::endl;
-	dstream<<"data.getSize()="<<data.getSize()<<", data[0]="
-			<<((unsigned int)data[0]&0xff)<<std::endl;*/
 	u32 header_size = 3;
 	u32 packet_size = data.getSize() + header_size;
 	SharedBuffer<u8> b(packet_size);
@@ -145,9 +142,6 @@ SharedBuffer<u8> makeReliablePacket(
 
 	memcpy(&b[header_size], *data, data.getSize());
 
-	/*dstream<<"data.getSize()="<<data.getSize()<<", data[0]="
-			<<((unsigned int)data[0]&0xff)<<std::endl;*/
-	//dstream<<"END SharedBuffer<u8> makeReliablePacket()"<<std::endl;
 	return b;
 }
 
@@ -180,8 +174,6 @@ RPBSearchResult ReliablePacketBuffer::findPacket(u16 seqnum)
 	for(; i != m_list.end(); i++)
 	{
 		u16 s = readU16(&(i->data[BASE_HEADER_SIZE+1]));
-		/*dout_con<<"findPacket(): finding seqnum="<<seqnum
-				<<", comparing to s="<<s<<std::endl;*/
 		if(s == seqnum)
 			break;
 	}
@@ -464,14 +456,6 @@ void Peer::reportRTT(float rtt)
 	
 	// Calculate resend_timeout
 
-	/*int reliable_count = 0;
-	for(int i=0; i<CHANNEL_COUNT; i++)
-	{
-		reliable_count += channels[i].outgoing_reliables.size();
-	}
-	float timeout = avg_rtt * RESEND_TIMEOUT_FACTOR
-			* ((float)reliable_count * 1);*/
-	
 	float timeout = avg_rtt * RESEND_TIMEOUT_FACTOR;
 	if(timeout < RESEND_TIMEOUT_MIN)
 		timeout = RESEND_TIMEOUT_MIN;
@@ -598,14 +582,6 @@ SharedBuffer<u8> Channel::ProcessPacket(
 				// (avg_rtt and resend_timeout)
 				Peer *peer = con->GetPeer(peer_id);
 				peer->reportRTT(rtt);
-
-				//con->PrintInfo(dout_con);
-				//dout_con<<"RTT = "<<rtt<<std::endl;
-
-				/*dout_con<<"OUTGOING: ";
-				con->PrintInfo();
-				outgoing_reliables.print();
-				dout_con<<std::endl;*/
 			}
 			catch(NotFoundException &e){
 				con->PrintInfo(derr_con);
@@ -719,9 +695,6 @@ SharedBuffer<u8> Channel::ProcessPacket(
 		dout_con<<" [sending CONTROLTYPE_ACK"
 				" to peer_id="<<peer_id<<"]";
 		dout_con<<std::endl;
-		
-		//DEBUG
-		//assert(incoming_reliables.size() < 100);
 
 		// Send a CONTROLTYPE_ACK
 		SharedBuffer<u8> reply(4);
@@ -730,13 +703,8 @@ SharedBuffer<u8> Channel::ProcessPacket(
 		writeU16(&reply[2], seqnum);
 		con->SendAsPacket(peer_id, channelnum, reply, false);
 
-		//if(seqnum_higher(seqnum, next_incoming_seqnum))
 		if(is_future_packet)
 		{
-			/*con->PrintInfo();
-			dout_con<<"Buffering reliable packet (seqnum="
-					<<seqnum<<")"<<std::endl;*/
-			
 			// This one comes later, buffer it.
 			// Actually we have to make a packet to buffer one.
 			// Well, we have all the ingredients, so just do it.
@@ -748,11 +716,6 @@ SharedBuffer<u8> Channel::ProcessPacket(
 					channelnum);
 			try{
 				incoming_reliables.insert(packet);
-				
-				/*con->PrintInfo();
-				dout_con<<"INCOMING: ";
-				incoming_reliables.print();
-				dout_con<<std::endl;*/
 			}
 			catch(AlreadyExistsException &e)
 			{

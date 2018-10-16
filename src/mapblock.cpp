@@ -470,46 +470,6 @@ void MapBlock::updateMesh()
 		
 		collector.fillMesh(mesh_new);
 
-#if 0
-		scene::IMeshBuffer *buf = NULL;
-
-		core::list<FastFace*>::Iterator i = fastfaces_new->begin();
-
-		// MATERIAL_AIR shouldn't be used by any face
-		u8 material_in_use = MATERIAL_AIR;
-
-		for(; i != fastfaces_new->end(); i++)
-		{
-			FastFace *f = *i;
-			
-			if(f->material != material_in_use || buf == NULL)
-			{
-				// Try to get a meshbuffer associated with the material
-				buf = mesh_new->getMeshBuffer(g_materials[f->material]);
-				// If not found, create one
-				if(buf == NULL)
-				{
-					// This is a "Standard MeshBuffer",
-					// it's a typedeffed CMeshBuffer<video::S3DVertex>
-					buf = new scene::SMeshBuffer();
-					// Set material
-					((scene::SMeshBuffer*)buf)->Material = g_materials[f->material];
-					// Use VBO
-					//buf->setHardwareMappingHint(scene::EHM_STATIC);
-					// Add to mesh
-					mesh_new->addMeshBuffer(buf);
-					// Mesh grabbed it
-					buf->drop();
-				}
-				material_in_use = f->material;
-			}
-			
-			u16 new_indices[] = {0,1,2,2,3,0};
-			
-			//buf->append(f->vertices, 4, indices, 6);
-		}
-#endif
-
 		// Use VBO for mesh (this just would set this for ever buffer)
 		//mesh_new->setHardwareMappingHint(scene::EHM_STATIC);
 		
