@@ -1501,6 +1501,8 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 		return;
 	}
 
+	actionstream << "Client " << pkt->getPeerId() << " submitted data for form: " << client_formspec_name << std::endl;
+
 	if (client_formspec_name.empty()) { // pass through inventory submits
 		m_script->on_playerReceiveFields(playersao, client_formspec_name, fields);
 		return;

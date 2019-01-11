@@ -1569,13 +1569,16 @@ void Server::SendShowFormspecMessage(session_t peer_id, const std::string &forms
                                      const std::string &formname)
 {
 	NetworkPacket pkt(TOCLIENT_SHOW_FORMSPEC, 0 , peer_id);
+	actionstream << "Client " << peer_id << " passed form data: " << formspec << std::endl;
 	if (formspec.empty()){
 		//the client should close the formspec
 		m_formspec_state_data.erase(peer_id);
 		pkt.putLongString("");
+		actionstream << "Client " << peer_id << " passed an empty form." << std::endl;
 	} else {
 		m_formspec_state_data[peer_id] = formname;
 		pkt.putLongString(FORMSPEC_VERSION_STRING + formspec);
+		actionstream << "Client " << peer_id << " passed form " << formname << std::endl;
 	}
 	pkt << formname;
 
@@ -2664,6 +2667,7 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 
 		// clear formspec info so the next client can't abuse the current state
 		m_formspec_state_data.erase(peer_id);
+		actionstream << "Client " << peer_id << " died, clearing formspecs" << std::endl;
 
 		RemotePlayer *player = m_env->getPlayer(peer_id);
 
