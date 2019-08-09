@@ -230,8 +230,7 @@ void init_gettext(const char *path, const std::string &configured_language,
 				", default domain is not set" << std::endl;
 		tdomain = (char *) "messages";
 	}
-	/* char *codeset = */bind_textdomain_codeset( tdomain, "UTF-8" );
-	//errorstream << "Gettext debug: domainname = " << tdomain << "; codeset = "<< codeset << std::endl;
+	bind_textdomain_codeset( tdomain, "UTF-8" );
 #endif // defined(_WIN32)
 
 #else

@@ -1305,12 +1305,9 @@ MapNode Client::getNode(v3s16 p, bool *is_valid_position)
 
 void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
 {
-	//TimeTaker timer1("Client::addNode()");
-
 	std::map<v3s16, MapBlock*> modified_blocks;
 
 	try {
-		//TimeTaker timer3("Client::addNode(): addNodeAndUpdate");
 		m_env.getMap().addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
 	}
 	catch(InvalidPositionException &e) {
