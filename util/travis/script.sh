@@ -41,6 +41,28 @@ if [[ ${PLATFORM} == "Unix" ]]; then
 		${CMD} && exit 0
 	fi
 
+elif [[ ${PLATFORM} == "nitpicker" ]]; then
+
+	# Hook up the coding standards checker.
+	. util/travis/coding-standards-checker.sh
+
+	# Run cmake, enabling everything. It does not matter that
+	CMAKE_FLAGS=''
+
+	if [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
+		CMAKE_FLAGS+=' -DCUSTOM_GETTEXT_PATH=/usr/local/opt/gettext'
+	fi
+
+	if [[ -n "${FREETYPE}" ]] && [[ "${FREETYPE}" == "0" ]]; then
+		CMAKE_FLAGS+=' -DENABLE_FREETYPE=0'
+	fi
+
+	cmake -DCMAKE_BUILD_TYPE=Debug \
+		-DRUN_IN_PLACE=TRUE \
+		-DENABLE_GETTEXT=TRUE \
+		-DBUILD_SERVER=TRUE \
+		${CMAKE_FLAGS} .
+
 elif [[ $PLATFORM == Win* ]]; then
 	[[ $CC == "clang" ]] && exit 1 # Not supposed to happen
 	# We need to have our build directory outside of the minetest directory because

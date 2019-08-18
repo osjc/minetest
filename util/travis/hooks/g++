@@ -1,0 +1,8 @@
+#!/bin/bash -e
+
+CHECKER="$1"
+shift
+ORIG_CXX="$1"
+shift
+$CHECKER --cplusplus -- "$@"
+$ORIG_CXX "$@"

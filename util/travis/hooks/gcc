@@ -1,0 +1,8 @@
+#!/bin/bash -e
+
+CHECKER="$1"
+shift
+ORIG_CC="$1"
+shift
+$CHECKER -- "$@"
+$ORIG_CC "$@"
